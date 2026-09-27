@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # 兼容将来改用 git submodule 引入主题的情况；
           # 同时保留完整 git 历史，便于启用「基于 git 的最后更新时间」类插件
@@ -41,9 +41,12 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          # 24 是当前 LTS；Node 20 已于 2026-04 结束维护，
+          # 且 runner 已强制把基于 Node 20 的 action 迁到 Node 24，故直接对齐 24。
+          # 本项目的构建已在 Node 24 上验证通过。
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies

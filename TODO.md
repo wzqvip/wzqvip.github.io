@@ -165,6 +165,7 @@
 | 2026-09-26 | 首次推送 `main`，Actions 构建成功，`gh-pages` 分支自动生成 |
 | 2026-09-26 | Pages 发布来源切换为 `gh-pages` 并触发构建，<https://wzqvip.github.io> 线上验收通过 |
 | 2026-09-26 | 实测确认：正文图片只写文件名的相对路径方案在线上正确解析（`/posts/hello-world/cover.png`） |
+| 2026-09-26 | 升级 workflow：`actions/checkout@v7`、`actions/setup-node@v7`，构建 Node 版本 20 → 24（Node 20 已 EOL） |
 
 ---
 
