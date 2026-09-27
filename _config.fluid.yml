@@ -1,0 +1,96 @@
+# =============================================================================
+#  Fluid 主题配置覆盖文件
+# =============================================================================
+#  这里「只写需要改的项」，没写的会自动沿用主题官方默认值。
+#
+#  原理：Hexo 会把本文件读入 theme_config，Fluid 再用深合并覆盖到主题自带的
+#        _config.yml 之上（见 hexo-theme-fluid/scripts/utils/object.js 的 merge）。
+#        因此不需要把官方那份 1000 多行的配置整份复制过来，那样反而难以维护。
+#
+#  ⚠️ 主题是通过 npm 安装的（package.json 里的 hexo-theme-fluid），
+#     所以不要去 themes/ 里找它，也不要直接改 node_modules 里的文件
+#     （那只是本地缓存，Actions 每次都会重新安装，改动会丢）。
+#
+#  完整可改项清单：node_modules/hexo-theme-fluid/_config.yml
+#  官方文档      ：https://hexo.fluid-dev.com/docs/guide/
+# =============================================================================
+
+# 导航栏
+navbar:
+  # 留空则用 _config.yml 里的 title
+  blog_title: "wzqvip 的博客"
+
+# 首页
+index:
+  # 首页大字副标题，留空则用 _config.yml 里的 subtitle
+  slogan:
+    text: "记录技术与生活"
+
+# 「关于」页（页面本体在 source/about/index.md）
+about:
+  # 昵称
+  name: "wzqvip"
+  # 一句话简介
+  intro: "记录技术与生活"
+  # 头像：默认用主题自带的 /img/avatar.png。
+  # 想换成自己的：把图片传到 source/img/ 下，这里改成 /img/你的文件名
+  avatar: /img/avatar.png
+  # 社交图标，class 可在 https://hexo.fluid-dev.com/docs/icon/ 查
+  icons:
+    - { class: "iconfont icon-github-fill", link: "https://github.com/wzqvip", tip: "GitHub" }
+    #- { class: "iconfont icon-wechat-fill", qrcode: "/img/wechat.png" }
+    #- { class: "iconfont icon-mail-fill", link: "mailto:you@example.com", tip: "邮箱" }
+
+# 文章页
+post:
+  # 首页文章卡片的默认封面图；单篇文章可用 front-matter 的 index_img 覆盖。
+  # ⚠️ 注意：这个字段走 url_for()，必须是「以 / 开头的站点根路径」，
+  #    不能像正文图片那样写相对文件名。先放图片到 source/img/ 再写 /img/xxx.png。
+  default_index_img: ""
+
+  # ---------------------------- 评论插件 ----------------------------
+  comments:
+    enable: true
+    # 可选：utterances | disqus | gitalk | valine | waline | giscus | ...
+    type: giscus
+
+# =============================================================================
+#  Giscus 评论（基于 GitHub Discussions）
+# =============================================================================
+#  参数怎么来的：https://giscus.app/zh-CN 填入仓库后会自动生成下面这段配置。
+#
+#  ⚠️ 使用前有两个「一次性」前置条件（详见 README「Giscus 配置备忘」）：
+#     1. 仓库必须已开启 Discussions 功能，否则评论框会报错；
+#     2. category-id 必须填写，它只能从 giscus.app 生成，
+#        填错或留空会导致评论区加载失败。
+# =============================================================================
+giscus:
+  # 仓库路径（owner/repo）
+  repo: wzqvip/wzqvip.github.io
+
+  # 仓库的 node_id，已通过 GitHub API 取得，无需改动
+  repo-id: R_kgDOPBveyQ
+
+  # 讨论区分类「名称」
+  category: Announcements
+
+  # 讨论区分类 ID
+  # （2026-09-26 通过 GitHub GraphQL 的 discussionCategories 取得）
+  # 若将来在仓库里删掉这个分类，需要重新获取并替换
+  category-id: "DIC_kwDOPBveyc4DGe0K"
+
+  # 页面 ↔ 讨论的映射规则
+  # pathname: 用页面路径做映射（推荐，改标题不会丢评论）
+  mapping: pathname
+
+  # 亮色 / 暗色主题，跟随站点明暗切换
+  theme-light: light
+  theme-dark: dark
+  # 若想完全贴合 Fluid 的配色，可改成：
+  # theme-light: https://hexo.fluid-dev.com/css/giscus-light.css
+  # theme-dark:  https://hexo.fluid-dev.com/css/giscus-dark.css
+
+  reactions-enabled: 1 # 显示表情回应
+  emit-metadata: 0
+  input-position: top # 评论输入框在上面
+  lang: zh-CN

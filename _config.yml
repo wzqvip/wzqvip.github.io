@@ -1,0 +1,141 @@
+# =============================================================================
+#  Hexo 核心配置（站点级）
+# =============================================================================
+#  线上地址 : https://wzqvip.github.io
+#  仓库形态 : 用户站点仓库，仓库名恰好等于 wzqvip.github.io
+#  主题外观 : 请改根目录的 _config.fluid.yml，本文件不负责主题样式
+#
+#  发布流程 : push 到 main 分支 → GitHub Actions 自动 hexo generate
+#             → 产物推送到 gh-pages 分支 → GitHub Pages 对外提供访问
+#             因此本文件改完只要提交，线上就会自动生效，无需本地操作。
+# =============================================================================
+
+# Site
+title: wzqvip 的博客            # ← 请改成你想要的站点名称
+subtitle: ''
+description: ''                # ← 建议补一句站点描述，利于搜索引擎收录
+keywords:                      # ← 建议补几个关键词，如 [技术, 笔记]
+author: wzqvip                 # ← 请改成你的署名（会显示在文章页和版权处）
+language: zh-CN
+# 必须显式设置时区：GitHub Actions 运行在 UTC，
+# 若留空，Asia/Shanghai 写下的日期会被当成 UTC，导致文章时间整体偏移 8 小时。
+timezone: 'Asia/Shanghai'
+
+# URL
+## 用户站点部署在根路径，因此 root 必须为 /（项目站点才需要写成 /仓库名/）
+url: https://wzqvip.github.io
+root: /
+## 文章链接格式：/posts/文章文件名/
+permalink: posts/:title/
+permalink_defaults:
+pretty_urls:
+  trailing_index: true # false 会去掉链接末尾的 index.html
+  trailing_html: true # false 会去掉链接末尾的 .html
+
+# Directory
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+skip_render:
+
+# Writing
+new_post_name: :title.md # 新文章默认文件名
+default_layout: post
+titlecase: false # 是否自动把标题转成首字母大写
+external_link:
+  enable: true # 正文里的外链在新标签页打开
+  field: site # 全站生效
+  exclude: ''
+  as_badge: false
+filename_case: 0
+render_drafts: false
+
+# =============================================================================
+#  🔴 文章图片相对路径的关键开关（整个博客最重要的两项，请勿随意改动）
+# =============================================================================
+## 开启「文章同名资产文件夹」：
+##   source/_posts/我的文章.md  ←→  source/_posts/我的文章/  （放图片）
+post_asset_folder: true
+## relative_link 必须为 false，否则会与下面的 marked.postAsset 冲突
+relative_link: false
+future: true
+syntax_highlighter: highlight.js
+
+# Markdown 渲染器（hexo-renderer-marked）配置
+## 这两项共同决定「正文里写的相对图片路径能否正确解析」：
+##   prependRoot : 给站内图片路径补上 root（/）
+##   postAsset   : 把 ![](cover.png) 解析成该文章资产文件夹里的真实地址
+## 二者缺一不可。开启后正确的写法是「只写文件名」：
+##   ![封面](cover.png)          ✅ 生成 /posts/我的文章/cover.png
+##   ![封面](我的文章/cover.png)  ❌ 生成 /我的文章/cover.png（404，图片裂开）
+marked:
+  prependRoot: true
+  postAsset: true
+  gfm: true
+  breaks: false # 单个换行不当作 <br>，中文写作更符合预期
+  smartypants: false
+  headerIds: true
+  lazyload: true # 图片懒加载，长文体验更好
+  modifyAnchors: 0
+  autolink: true
+  sanitizeUrl: false
+  dompurify: false
+
+highlight:
+  line_number: true
+  auto_detect: false
+  tab_replace: ''
+  wrap: true
+  hljs: false
+prismjs:
+  preprocess: true
+  line_number: true
+  tab_replace: ''
+
+# Home page setting
+index_generator:
+  path: ''
+  per_page: 10
+  order_by: -date
+
+# Category & Tag
+default_category: uncategorized
+category_map:
+tag_map:
+
+# Metadata elements
+meta_generator: true
+
+# Date / Time format
+date_format: YYYY-MM-DD
+time_format: HH:mm:ss
+## updated_option 支持 'mtime' | 'date' | 'empty'
+## ⚠️ 不要用默认的 mtime：Actions 每次构建都是全新 clone，
+##    所有文件的修改时间都等于构建时刻，会导致每篇文章的「最后更新」都变成构建当天。
+##    这里用 empty：只有你在文章 front-matter 里显式写了 updated: 才显示。
+##    （Hexo 的实际行为：empty → updated 为空，不是「当前时间」）
+updated_option: 'empty'
+
+# Pagination
+per_page: 10
+pagination_dir: page
+
+# Include / Exclude file(s)
+include:
+exclude:
+ignore:
+
+# Extensions
+## 主题通过 npm 安装（见 package.json 的 hexo-theme-fluid），
+## 因此 themes/ 目录保持为空即可，不需要 git submodule。
+theme: fluid
+
+# Deployment
+## 部署完全交给 GitHub Actions，此处留空。
+## 不要把 public/ 提交到 main，也不需要本地 hexo deploy。
+deploy:
+  type: ''

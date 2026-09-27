@@ -1,0 +1,162 @@
+# TODO —— 项目状态看板
+
+> 本文件是项目的「状态仪表盘」，记录**进行中的进度**（迁移、待办、迭代计划）。
+> 稳定的事实与操作说明请查 [`README.md`](./README.md)。
+>
+> 状态标签：`[ ]` 未完成 ｜ `[x]` 已完成
+>
+> **最后更新：2026-09-26**
+
+---
+
+## 🚧 当前阻塞项（做不完这三件事，线上就不正常）
+
+| # | 事项 | 不做会怎样 | 操作指引 |
+| --- | --- | --- | --- |
+| 1 | 开启仓库 Discussions | Giscus 评论区报配置错误 | [README 步骤 1](./README.md#步骤-1开启-discussionsgiscus-的前置条件) |
+| 2 | 填写 `giscus.category-id` | 评论区加载失败 | [README 步骤 2](./README.md#步骤-2填写-category-id) |
+| 3 | Pages 发布来源改为 `gh-pages` | 线上显示的是未编译的源文件 | [README 步骤 3](./README.md#步骤-3把-github-pages-的来源改成-gh-pages-分支) |
+
+---
+
+## 一、[基础搭建]
+
+### 已完成
+
+- [x] Hexo 8.1.2 项目骨架初始化（`package.json` / `_config.yml` / `scaffolds/` / `.gitignore`）
+- [x] 主题 Fluid 1.9.9 以 **npm 依赖**方式接入（不需要 git submodule，`themes/` 目录故意留空）
+- [x] 开启 `post_asset_folder` 文章同名资产文件夹
+- [x] 配置 `marked.prependRoot` + `marked.postAsset`，**实测确认**正文图片相对路径规则
+      （结论：只写文件名 `![x](cover.png)`；写成 `![x](文章名/cover.png)` 会 404）
+- [x] 设置 `timezone: 'Asia/Shanghai'`，避免 Actions 以 UTC 构建导致时间偏移 8 小时
+- [x] 设置 `updated_option: 'empty'`，避免每篇文章的「最后更新」都变成构建当天
+- [x] 示例文章 `source/_posts/hello-world.md`（含同名图片文件夹与封面图）
+- [x] 「关于」页 `source/about/index.md`（导航栏 `/about/` 不再是死链）
+- [x] Giscus 评论接入，已预填 `repo` 与 `repo-id`
+- [x] 本地前端搜索可用（Fluid 主题**内置**生成 `/local-search.xml`，无需 `hexo-generator-search` 等插件）
+- [x] GitHub Actions 部署流水线 `.github/workflows/deploy.yml`
+      （含 `permissions: contents: write`、并发控制、构建产物校验）
+- [x] `.gitignore` 忽略 `public/`、`node_modules/`、`db.json`
+- [x] 本地 `hexo clean && hexo generate` 构建验证通过（35 个产物，无报错）
+- [x] 从 GitHub API 取得 `repo-id` = `R_kgDOPBveyQ`
+- [x] 核实 HTTPS 已强制开启（Pages 设置 `https_enforced: true`），无需额外操作
+
+### 待办
+
+- [ ] 开启仓库 Discussions：Settings → Features → 勾选 Discussions
+- [ ] 从 <https://giscus.app/zh-CN> 获取分类 ID，填入 `_config.fluid.yml` 的 `giscus.category-id`
+- [ ] 把 GitHub Pages 发布来源改为 `gh-pages` 分支（Branch: `gh-pages`，目录: `/ (root)`）
+- [ ] 首次提交并推送到 `main` 分支
+- [ ] 确认 Actions 构建成功（绿色 ✅）
+- [ ] 确认 `gh-pages` 分支已自动生成
+- [ ] 确认 <https://wzqvip.github.io> 正常访问
+- [ ] 确认站点信息：`_config.yml` 里的 `title` / `author` / `description` / `keywords`
+      （当前为占位值：`wzqvip 的博客` / `wzqvip`）
+- [ ] 确认「关于」页信息：`_config.fluid.yml` 的 `about` 段昵称、简介、头像、社交图标
+- [ ] 把头像换成自己的图片（放到 `source/img/` 后改 `about.avatar`）
+- [ ] 把 `favicon` 换成自己的图标
+- [ ] （仅当 Actions 推送报 403 时）把 Workflow permissions 改为 Read and write
+
+---
+
+## 二、[数据迁移追踪]
+
+> 背景：历史内容经历了 **Typecho → WordPress → Hexo** 两次搬迁，
+> 本次任务是把它落到当前的 Hexo 结构中并修复资源引用。
+>
+> ⚠️ **迁移前请先确认上面的「阻塞项」已全部完成**，并确认线上示例文章能正常显示，
+> 否则迁移出问题时会分不清是新旧哪一环导致的。
+
+### 阶段 1：导出
+
+- [ ] 登录 WordPress 后台 → 工具 → 导出 → 选择「所有内容」→ 下载导出 XML 文件
+- [ ] 同时备份 `wp-content/uploads/` 整个目录（图片原文件，作为抓取失败的兜底）
+- [ ] 把 XML 文件保存到项目外的临时目录（不要提交进仓库）
+
+### 阶段 2：转换为 Markdown
+
+- [ ] 安装转换插件：`npm install hexo-migrator-wordpress --save`
+- [ ] 执行转换：`npx hexo migrate wordpress <导出文件.xml>`
+- [ ] 检查 `source/_posts/` 下生成的文章，确认 front-matter 的 `title` / `date` / `tags` / `categories`
+- [ ] 处理转换残留：WordPress 短代码（`[caption]`、`[gallery]`）、多余 `<p>` 标签、HTML 实体编码
+- [ ] 处理中文文件名与特殊字符（建议统一改成英文/拼音，避免网址出现一长串 `%E4%B8%AD`）
+
+### 阶段 3：历史图片本地化（重点）
+
+- [ ] 统计所有文章里引用的远程图片地址（`<img src="http...">` 与 `![x](http...)`）
+- [ ] 编写并运行 Python 脚本：批量下载远程图片 → 存入该文章的**同名资产文件夹**
+- [ ] 批量改写正文引用：`![x](https://旧站/wp-content/uploads/2020/01/a.jpg)` → `![x](a.jpg)`
+      （**只写文件名**，规则见 [README 第四节](./README.md#四-图片引用规范最重要)）
+- [ ] 处理重名图片冲突（不同文章的同名文件互不影响；同一文章内重名需加后缀）
+- [ ] 处理下载失败的图片：改用 `wp-content/uploads/` 备份手动补齐
+- [ ] 校验：本地 `npm run build` 后检查 `public/posts/*/` 下图片是否齐全
+- [ ] 输出迁移报告（成功数 / 失败数 / 失败清单）
+- [ ] 全站扫描是否还有遗留的外链图片（应尽量本地化，避免旧站关停后图片全丢）
+
+### 阶段 4：URL 兼容与重定向
+
+- [ ] 梳理 WordPress 旧链接格式（例如 `/archives/123`、`/2020/01/hello.html`）
+- [ ] 决定策略：保留旧路径 / 生成静态跳转页 / 依赖搜索引擎重新收录
+- [ ] 为高流量旧链接生成 301 跳转（可在 `source/` 下放置带 `<meta refresh>` 的跳转页）
+- [ ] 核对新 permalink 规则 `/posts/:title/` 与旧链接的对应关系
+- [ ] 迁移完成后提交站点地图，加速搜索引擎更新
+
+### 阶段 5：验收
+
+- [ ] 逐篇抽查：图片显示、代码块高亮、表格、公式、目录
+- [ ] 核对分类与标签是否与旧站一致
+- [ ] 检查评论：旧站评论无法直接迁移，确认是否需要人工搬运重要评论
+- [ ] 确认无死链后，删除示例文章 `hello-world.md` 及其图片文件夹
+
+---
+
+## 三、[功能增强与体验]
+
+### 已完成
+
+- [x] 本地前端搜索（Fluid 内置，已验证生成 `/local-search.xml`）
+- [x] 代码高亮（highlight.js，见 `_config.yml`）
+- [x] 图片懒加载（Fluid 内置 + `marked.lazyload`）
+- [x] 暗色模式（Fluid 内置，Giscus 主题随站点明暗自动切换）
+- [x] 404 页面（Fluid 内置，5 秒后跳回首页）
+
+### 待办
+
+- [ ] **Giscus 主题配色微调**：改用 Fluid 官方配色 CSS
+      （`_config.fluid.yml` 里 `theme-light` / `theme-dark` 换成注释中的两个 URL）
+- [ ] **Giscus 交互微调**：按需调整 `reactions-enabled`、`input-position`，或改用 `mapping: og:title`
+- [ ] RSS 订阅：集成 `hexo-generator-feed`，并在导航栏加订阅入口
+- [ ] 站点地图：集成 `hexo-generator-sitemap`，提交到 Google / Bing / 百度
+- [ ] 图片优化：构建期压缩与 WebP 转换，降低首屏流量
+- [ ] 阅读体验：确认 Fluid 的字数统计 / 阅读时长 / 文章目录（TOC）符合预期
+- [ ] 首页封面：为文章统一定制 `index_img`（注意必须是 `/img/xxx.png` 根路径写法）
+- [ ] 上一篇 / 下一篇导航：确认开启并调整样式
+- [ ] 访问统计：接入 umami 或同类方案（Fluid 的 `web_analytics`）
+- [ ] 评论区新评论邮件通知（通过 GitHub Discussions 的 Watch 设置）
+- [ ] 自定义域名（如将来需要，先配置 CNAME 再改 `_config.yml` 的 `url` 与 `root`）
+- [ ] 依赖升级机制：定期 `npm outdated` 并升级 Hexo / Fluid 版本
+
+---
+
+## 四、变更记录
+
+> 每次对配置或目录结构做出实质性变更，都在此追加一行，方便回溯「什么时候改了什么」。
+
+| 日期 | 变更内容 |
+| --- | --- |
+| 2026-09-26 | 项目初始化：Hexo 8 + Fluid 1.9（npm 方式）+ GitHub Actions 部署流水线骨架 |
+| 2026-09-26 | 开启 `post_asset_folder`，实测确认「正文图片只写文件名」的相对路径规则，并写入 README |
+| 2026-09-26 | 接入 Giscus，预填 `repo` / `repo-id`；`category-id` 待管理员从 giscus.app 获取 |
+| 2026-09-26 | 补充「关于」页，消除导航栏 `/about/` 死链 |
+| 2026-09-26 | 发现本仓库默认工作流权限为 read-only，在 workflow 中显式声明 `permissions: contents: write` |
+| 2026-09-26 | 移除 `hexo-generator-search`：Fluid 主题自带搜索索引生成器，装插件会产出多余文件 |
+| 2026-09-26 | 设置 `timezone: Asia/Shanghai` 与 `updated_option: empty`，修正 CI 环境下的时间问题 |
+
+---
+
+## 五、文档维护约定
+
+- 完成一个任务，**立即**把 `[ ]` 改成 `[x]`，不要攒着一起改
+- 新增任务写进对应看板，并尽量写清「为什么做」和「验收标准」
+- 任何涉及**配置项或目录结构**的变更，都要同步更新 `README.md`（事实）和本文件的变更记录
+- 「当前阻塞项」表格只保留真正卡住线上功能的事项，解决后立刻移除

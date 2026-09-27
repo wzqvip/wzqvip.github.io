@@ -1,0 +1,23 @@
+# ---- Hexo 生成物（由 GitHub Actions 构建，绝不提交） ----
+public/
+db.json
+.deploy*/
+_multiconfig.yml
+
+# ---- 依赖（由 Actions 中的 npm install 还原） ----
+node_modules/
+
+# ---- 本地环境 / 编辑器 ----
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.swp
+
+# ---- 千万不要提交的东西 ----
+.env
+.env.local
+*.pem

@@ -1,0 +1,83 @@
+name: Deploy Hexo Blog
+
+# =============================================================================
+#  触发条件：任何推送到 main 分支的提交（包括在 GitHub 网页端直接改文件）
+# =============================================================================
+on:
+  push:
+    branches:
+      - main
+  # 允许在仓库的 Actions 页面手动点按钮重新部署（排查问题时很有用）
+  workflow_dispatch:
+
+# =============================================================================
+#  GITHUB_TOKEN 权限
+# =============================================================================
+#  ⚠️ 本仓库的「默认工作流权限」目前是 read-only
+#     （Settings → Actions → General → Workflow permissions）。
+#     这里必须显式声明 contents: write，否则最后一步推送 gh-pages 分支会 403。
+#     说明：仓库里的默认设置只决定「没写 permissions 时」的默认值，
+#     工作流里显式声明可以在这之上申请写权限，因此不需要去改仓库设置。
+permissions:
+  contents: write
+
+# 同一时间只跑一个部署，新的提交会取消正在排队的旧任务，避免产物互相覆盖
+concurrency:
+  group: hexo-pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          # 兼容将来改用 git submodule 引入主题的情况；
+          # 同时保留完整 git 历史，便于启用「基于 git 的最后更新时间」类插件
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            # 有 lock 文件时用 ci：严格按锁定版本安装，构建可复现
+            npm ci --no-audit --no-fund
+          else
+            # 万一 lock 文件没提交（例如只在网页端改了 package.json），也能兜底
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Generate static files
+        run: npx hexo generate
+
+      - name: Sanity check build output
+        run: |
+          if [ ! -f public/index.html ]; then
+            echo "::error::public/index.html 不存在，构建产物异常，已中止部署"
+            exit 1
+          fi
+          echo "构建产物文件数：$(find public -type f | wc -l)"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          # 每次部署都用单次提交重建 gh-pages，避免产物历史无限膨胀
+          force_orphan: true
+          # 生成 .nojekyll，防止 GitHub Pages 用 Jekyll 处理产物
+          # （Hexo 产物里的 _ 开头目录会被 Jekyll 忽略，必须关掉）
+          enable_jekyll: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'chore(deploy): rebuild site from ${{ github.sha }}'

@@ -1,0 +1,10 @@
+# 本目录故意保持为空。
+#
+# 主题 Fluid 通过 npm 依赖安装（见 package.json 的 hexo-theme-fluid），
+# 因此不需要把主题源码放进 themes/ 目录，也不需要 git submodule。
+# 好处：默认主题文件不进入版本库，GitHub 网页端即可完成全部维护。
+#
+# 如果你需要长期覆写主题的某个 EJS 模板，再执行以下步骤（可选，见 README「进阶」）：
+#   1. 把 node_modules/hexo-theme-fluid/layout/<文件>.ejs 复制到 themes/fluid/layout/<文件>.ejs
+#   2. 修改后提交，Hexo 会优先使用 themes/fluid 下的同名文件
+# 注意：一旦 themes/fluid 存在，npm 包内的默认模板将被整体覆盖，升级主题时需手动同步。
