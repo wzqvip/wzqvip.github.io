@@ -86,7 +86,7 @@
 ### 迁移结果
 
 - [x] 从 WordPress 取得 MySQL 转储（`blog_tacoin_site` 库）与 `wp-content` 全量压缩包
-- [x] 迁移已发布文章 **35 篇** → `source/_posts/`
+- [x] 迁移已发布文章 **35 篇**（另有 2 篇安装器示例文章也保留，见下）→ `source/_posts/`
 - [x] 迁移「关于我」页面 → `source/about/index.md`（纯文本 ASCII 科技树用代码块保住排版）
 - [x] 迁移草稿 1 篇 → `source/_drafts/mate-xs2.md`（不会发布）
 - [x] 图片与附件 **185 个 / 91 MB** 本地化到各文章的同名资产文件夹
@@ -100,12 +100,16 @@
 - [x] 输出迁移脚本 `tools/migrate-wordpress.mjs`（可重复运行，支持 `--dry-run`）
 - [x] 原始导出文件移出仓库（SQL 转储含 `wp_users` 密码哈希，**绝不能提交**）
 
+### 安装器示例文章（已保留，用原始时间）
+
+- [x] Typecho 默认文章「欢迎使用 Typecho」→ `/posts/start/`，原始时间 2024-08-29 20:37
+- [x] WordPress 默认文章「世界，您好！」→ `/posts/wordpress-hello-world/`，原始时间 2025-07-25 20:31
+      （原始 slug 是 `hello-world`，与展示页同名，已改名避免覆盖）
+
 ### 刻意跳过的内容
 
-安装器自带、无实际价值的示例，不迁移：
+没有实际内容的空壳，不迁移：
 
-- [x] `hello-world`「世界，您好！」（WordPress 默认文章，且会与本站示例文章 slug 撞车）
-- [x] `start`「欢迎使用 Typecho」（Typecho 默认文章）
 - [x] `sample-page`「示例页面」（WordPress 示例页面）
 - [x] `privacy-policy`（WordPress 自动生成的隐私政策草稿，正文是待填模板且含内网 IP）
 
@@ -230,6 +234,8 @@
 | 2026-09-26 | 撤销上面那次「生成占位封面」的做法并删除 `tools/gen-covers.mjs`：没配图的文章就保持无图，由瀑布流自然错开 |
 | 2026-09-26 | 「关于」页头像改为同步 GitHub：`about.avatar` → `https://github.com/wzqvip.png?size=240` |
 | 2026-09-26 | 两张第三方外链图本地化进各自文章的资产文件夹，改写为裸文件名；README 里那节说明已删除 |
+| 2026-09-26 | 补迁安装器示例文章：Typecho「欢迎使用 Typecho」与 WordPress「世界，您好！」，均用原始时间（后者原名 hello-world 与展示页撞车，改名 wordpress-hello-world） |
+| 2026-09-26 | hello-world 展示页日期由 2024-01-15 改为 **2026-09-26 22:32**（实际建站那一刻），成为全站最新一篇 |
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 
 ---

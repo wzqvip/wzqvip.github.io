@@ -459,15 +459,23 @@ npm run build        # 只编译，产物在 public/
 
 | 来源 | 数量 | 去向 |
 | --- | --- | --- |
-| 已发布文章 | 35 篇 | `source/_posts/<slug>.md` |
+| 已发布文章 | 35 篇（另有 2 篇安装器示例文章，见下） | `source/_posts/<slug>.md` |
 | 「关于我」页面 | 1 个 | `source/about/index.md`（替换了原先的占位内容） |
 | 草稿 | 1 篇 | `source/_drafts/mate-xs2.md`（不会发布） |
 | 图片与附件 | 185 个，约 91 MB | 各自文章的 `source/_posts/<slug>/` |
 
-**刻意没有迁移**（都是安装器自带、无实际内容的示例）:
+**安装器自带的示例文章也保留了**（作为建站历程的一环，时间用原始时间）：
 
-- `hello-world`「世界，您好！」—— WordPress 默认文章（且 slug 会和本站示例文章撞车）
-- `start`「欢迎使用 Typecho」—— Typecho 默认文章
+| 来源 | 标题 | 路径 | 原始时间 |
+| --- | --- | --- | --- |
+| Typecho 默认文章 | 欢迎使用 Typecho | `/posts/start/` | 2024-08-29 20:37 |
+| WordPress 默认文章 | 世界，您好！ | `/posts/wordpress-hello-world/` | 2025-07-25 20:31 |
+
+> WordPress 那篇的原始 slug 是 `hello-world`，与本站的展示页同名，
+> 所以改成了 `wordpress-hello-world` 以避免覆盖。
+
+**刻意没有迁移**（没有实际内容的空壳）：
+
 - `sample-page`「示例页面」—— WordPress 示例页面
 - `privacy-policy` —— WordPress 自动生成的隐私政策草稿，正文还是待填模板且含内网 IP
 
