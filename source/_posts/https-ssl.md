@@ -7,6 +7,7 @@ tags:
   - "HTTPS"
   - "证书"
 description: "Cloudflare可以一键获取15年的服务器对CF证书，但是开启CF代理在\\ \\ 网速会比较慢。CF又不提供阿里/腾讯那样的证书，要自行从LetsEncrypt获取。 我们用手动模式，设置DNS，然后获取证书上传到服务器。 文档 http…"
+index_img: "/img/covers/https-ssl.svg"
 ---
 
 Cloudflare可以一键获取15年的服务器对CF证书，但是开启CF代理在\*\*网速会比较慢。CF又不提供阿里/腾讯那样的证书，要自行从LetsEncrypt获取。 我们用手动模式，设置DNS，然后获取证书上传到服务器。

@@ -434,7 +434,8 @@ npm run build        # 只编译，产物在 public/
 | `source/_posts/` | **文章 Markdown 和图片（日常就改这里）** | ✅ 随便改 |
 | `source/_drafts/` | 草稿，**不会发布**（本地 `npm run dev` 才能预览） | ✅ 随便改 |
 | `scripts/` | **Hexo 插件目录**（Hexo 会自动加载里面的 `.js`）：「拆解」板块页就是这里生成的 | ⚠️ 改前先读注释 |
-| `tools/` | 一次性工具（WordPress 迁移、封面挑选），**不参与构建** | ✅ 不用管 |
+| `tools/` | 一次性工具（WordPress 迁移、封面挑选与生成），**不参与构建** | ✅ 不用管 |
+| `source/img/covers/` | 没有真实配图的文章所用的**抽象封面（SVG）** | ✅ 可重跑生成 |
 | `source/css/custom.css` | 自定义样式：首页卡片墙 + 拆解板块网格 | ✅ 随便改 |
 | `source/img/` | 全站公共图片（首页封面、头像、横幅） | ✅ 可新增 |
 | `source/about/index.md` | 「关于」页面 | ✅ 可改 |
@@ -550,7 +551,25 @@ node tools/pick-covers.mjs             # 写进 front-matter
 node tools/pick-covers.mjs --force     # 重新挑一遍（覆盖已有的）
 ```
 
-没有可用图片的文章会保留「纯文字卡片」，不会硬塞一张无关封面。
+**正文里没有可用配图的文章，会由 `tools/gen-covers.mjs` 生成一张抽象封面**：
+
+```bash
+node tools/gen-covers.mjs --dry-run    # 先看会给哪几篇生成
+node tools/gen-covers.mjs              # 生成到 source/img/covers/ 并写入 index_img
+```
+
+> **为什么必须每篇都有封面？**
+> 首页是两栏网格，**同一行的两张卡片必然等高**。只要一张有 16:10 封面、
+> 一张没有，高度差就会变成一片空白（要么卡片内部空一块、要么卡片下方空一块）。
+> 让每篇都有等高的封面，网格才齐整。
+
+> **为什么生成的是 SVG？**
+> 封面只是「对角渐变 + 两团柔光」，没有细节。存成 PNG 每张要 ~64 KB，
+> 存成 SVG 只要 ~1 KB，14 张合计 14.6 KB，而且放多大都不糊。
+
+生成的封面放在 `source/img/covers/<slug>.svg`，路径以 `/img/covers/` 开头。
+以后某篇文章补了真实截图，跑一次 `tools/pick-covers.mjs` 就会自动换成真图
+（该脚本把 `/img/covers/` 视为占位，优先级最低）。
 
 ### 「拆解」板块：`/teardown/`
 

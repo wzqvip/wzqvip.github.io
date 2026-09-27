@@ -9,6 +9,7 @@ tags:
   - "WiFi-7"
   - "Drivers"
 description: "出于未知原因，intel新的驱动阉割了6Ghz与WIFI7支持（？） 删除注册表版本记录并降级到22.30版本即可。"
+index_img: "/img/covers/intel-be200-wifi-7.svg"
 ---
 
 出于未知原因，intel新的驱动阉割了6Ghz与WIFI7支持（？） 删除注册表版本记录并降级到22.30版本即可。

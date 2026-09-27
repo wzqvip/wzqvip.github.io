@@ -8,6 +8,7 @@ tags:
   - "PVE"
   - "故障解决"
 description: "呃，总之就是上传证书的时候可能选错了，然后web就一直提示 意外终止了连接 。SSH正常。 查询了一些文章或者重置证书无果。 curl发现报错是 SSL\\ ERROR\\ SYSCALL error 。 于是找到了论坛的解决方法。"
+index_img: "/img/covers/pve-web.svg"
 ---
 
 呃，总之就是上传证书的时候可能选错了，然后web就一直提示*意外终止了连接*。SSH正常。 查询了一些文章或者重置证书无果。 curl发现报错是*SSL\_ERROR\_SYSCALL error*。 于是找到了[论坛的解决方法](https://forum.proxmox.com/threads/ssl-error-with-pveproxy-ssl-certificates.68389/)。
