@@ -183,9 +183,22 @@
 - [x] **「拆解」独立板块** `/teardown/`：响应式卡片网格 + 封面图 + 导航栏入口
 - [x] 首屏横幅高度 100vh → 70vh：之前要滚一整屏才看得到文章
 - [x] 首页副标题改为随机显示 4 条（`index.slogan.text` 列表）
+- [x] **网页版后台（Pages CMS）**：新增根目录 `.pages.yml`，
+      配置「文章 / 草稿 / 关于页」三个栏目 + 媒体库（`source/img/uploads/`），
+      字段覆盖现有全部 front-matter（标题/时间/更新/分类单选/标签多选/摘要/封面图/正文），
+      分类与标签的可选项已按站内实际数据填全（9 分类 / 51 标签）。
+      与 WordPress 的区别：后台只编辑内容，构建发布仍走 GitHub Actions
 
 ### 待办
 
+- [ ] **手动启用 Pages CMS（只有第一次需要，需浏览器登录）**：
+      打开 <https://app.pagescms.org> → GitHub 登录 → 安装它的 GitHub App
+      → 只授权本仓库 → 选中仓库即可看到三个栏目
+- [ ] **首次使用后验证两件事**（本地无法验证，必须实际点一次）：
+      ① 编辑一篇老文章保存后，确认 `date` / `updated` 与 `- ["X"]` 分类写法没被改写乱；
+      ② 确认所见即所得编辑器没有吃掉正文里的 `<!-- more -->`（摘要分隔符）
+      和 `<details>` 原始 HTML。若有异常，把 `.pages.yml` 里 `body` 的
+      `type: rich-text` 改成 `type: code`（按 Markdown 高亮，不做任何转换）
 - [ ] **Giscus 主题配色微调**：改用 Fluid 官方配色 CSS
       （`_config.fluid.yml` 里 `theme-light` / `theme-dark` 换成注释中的两个 URL）
 - [ ] **Giscus 交互微调**：按需调整 `reactions-enabled`、`input-position`，或改用 `mapping: og:title`
@@ -246,6 +259,8 @@
 | 2026-09-26 | 修复分类层级 bug：6 篇多分类文章的 `categories` 改为 `- ["X"]` 写法，各类目文章数现与旧站完全一致（Homelab 14 / Misc 7 / Network 6 / Server 6 / Teardown 6 / CS 3 / Charger 1）；迁移脚本同步修正 |
 | 2026-09-26 | 更新 hello-world 里的 token 账单：199,056,158 tok / 缓存命中 99.87%，并新增一节写「近两亿 token 只花 ¥6.4（缓存 + 谷时价）」 |
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
+| 2026-09-26 | 新增网页版后台配置 `.pages.yml`（Pages CMS）：文章/草稿/关于页三栏目 + `/img/uploads` 媒体库；`source/img/uploads/.gitkeep` 占位（Hexo 会忽略点开头的文件，不会进 `public/`） |
+| 2026-09-26 | README 新增 3.1 节「图形界面后台」并把原子节顺延为 3.2~3.7，文件速查表补 `.pages.yml` |
 
 ---
 

@@ -35,6 +35,7 @@
 | **GitHub Actions** | 每次提交自动编译并发布 |
 | **GitHub Pages** | 免费托管编译产物 |
 | **Giscus** | 评论系统，评论存在本仓库的 Discussions 里 |
+| **Pages CMS**（可选） | 网页版后台，像 WordPress 一样写文章 / 传图（配置在 `.pages.yml`） |
 
 ### 发布流程
 
@@ -158,16 +159,64 @@ curl -s "https://giscus.app/api/discussions/categories?repo=wzqvip/wzqvip.github
 
 ## 三、日常维护：零配置 Web 工作流
 
-### 3.1 打开网页版编辑器
+### 3.1 首选：图形界面后台（Pages CMS）
+
+不想碰 Markdown 的话，本项目已经配好了一个**网页版后台**，
+用起来跟 WordPress 差不多：左边选栏目，右边填表单，传图片有媒体库。
+
+**第一次使用（大约 2 分钟，只需做一次）**
+
+1. 打开 <https://app.pagescms.org>
+2. 用 GitHub 账号登录 → 按提示安装它的 GitHub App → 授权范围**只勾本仓库**
+   （`wzqvip/wzqvip.github.io`）
+3. 回到首页选中本仓库，左边就会出现三个栏目：
+
+   | 栏目 | 对应的文件 |
+   | --- | --- |
+   | **文章** | `source/_posts/` 里已发布的文章 |
+   | **草稿** | `source/_drafts/`，写一半的先丢这里，**不会**发布到网站 |
+   | **「关于」页** | `source/about/index.md` |
+
+改完点保存，它会自动往本仓库提交一次 commit，
+然后 GitHub Actions 照常自动构建发布——等 1~2 分钟刷新网站就能看到。
+
+**后台能改哪些东西**
+
+由根目录的 `.pages.yml` 决定。本项目文章用到的 front-matter 字段
+（标题、发布时间、最后更新时间、分类、标签、摘要、首页封面图）
+已经**全部**列进去了，正常编辑不会丢字段。
+分类、标签的可选项也写在这个文件里——想加个新标签，
+先去 `.pages.yml` 里对应的 `values` 列表补一行，再回后台勾选。
+
+> 后台**不能**改 `_config.yml` / `_config.fluid.yml`：那两个文件里全是注释，
+> 程序化改写 YAML 会把注释冲掉。改配置仍然手改（见 [3.5](#35-修改站点标题作者等) / [3.6](#36-修改主题外观)）。
+
+**⚠️ 三个坑，掉进去很难受**
+
+1. **文件名就是网址。** 后台新建文章时会让你确认文件名，
+   **一定用英文短横线**（比如 `my-new-post`）。更关键的是：
+   **文章发布之后不要再改文件名**——网址一变，原来那条评论区就接不上了
+   （giscus 是按页面路径匹配评论的）。
+2. **分类只能选一个。** Hexo 会把「多个分类」理解成父子层级
+   （比如 `Server` 下面挂一个 `Homelab`），所以本站刻意限制为单分类。
+   真要一篇挂多个分类，得去 GitHub 直接改 front-matter，写成
+   `- ["分类名"]` 这种单元素数组的形式（普通列表会被当成父子层级）。
+3. **图片有两套约定，别慌。** 后台上传的图会进 `source/img/uploads/`，
+   引用写成 `/img/uploads/文件名`；老文章则是「同名文件夹 + 正文只写文件名」，
+   两套都能正常显示，不用去统一。
+
+> 不想用这个后台了？删掉根目录的 `.pages.yml` 即可，博客本身完全不受影响。
+
+### 3.2 备用：网页版编辑器（github.dev）
 
 在仓库任意页面按键盘上的 <kbd>.</kbd>（句号）键，
 会用 `github.dev` 打开一个完整的 **网页版 VS Code**，无需安装任何东西。
 
 > 也可以把网址里的 `github.com` 手动改成 `github.dev`，效果一样。
 
-### 3.2 新建一篇文章
+### 3.3 新建一篇文章
 
-**方式 A：网页版编辑器（推荐，能同时建图片文件夹）**
+**方式 A：网页版编辑器（要自己管图片文件夹时用这个）**
 
 1. 在左侧文件树找到 `source/_posts/`
 2. 右键 → **New File**，文件名写 `我的文章.md`
@@ -185,7 +234,7 @@ curl -s "https://giscus.app/api/discussions/categories?repo=wzqvip/wzqvip.github
 3. 提交后，再单独上传图片到同名文件夹（`Add file` → `Upload files` 时，
    在文件名里带上文件夹名，例如 `我的文章/cover.png`，GitHub 会自动建目录）
 
-### 3.3 文章的 front-matter（头部信息）
+### 3.4 文章的 front-matter（头部信息）
 
 每篇文章开头的 `---` 之间的部分：
 
@@ -195,17 +244,24 @@ title: 文章标题            # 显示在页面上的标题
 date: 2024-06-01 10:00:00  # 发布时间，务必手写，否则会取构建时刻
 tags:
   - 标签A
+  - 标签B
 categories:
-  - 分类B
+  - ["分类B"]              # ⚠️ 外面这对中括号不能省，原因见下
 description: 一句话摘要，用于搜索引擎和分享卡片
-# index_img: /img/xxx.png  # 首页卡片封面（注意：要写 /img/ 开头的根路径）
+# index_img: /posts/my-post/cover.png   # 首页卡片封面，必须写 / 开头的根路径
 ---
 ```
 
 > ⚠️ **`date` 一定要手写。** 如果省略，Hexo 会取文件时间，
 > 而在 Actions 环境里文件时间是「构建那一刻」，每次发布都可能变。
 
-### 3.4 修改站点标题、作者等
+> ⚠️ **分类一定要写成 `- ["分类B"]`。** Hexo 会把 `categories` 列表里的多项
+> 当成**父子层级**：写 `- Server` + `- Homelab` 会得到「Server 的子分类 Homelab」，
+> 顶层 `/categories/Homelab/` 就找不到这篇文章。套一层中括号（单元素数组）
+> 才是「一个平级分类」。本站每篇只挂一个分类，详细来龙去脉见
+> [第九节](#九wordpress-迁移记录)的转换规则。
+
+### 3.5 修改站点标题、作者等
 
 编辑根目录 `_config.yml` 最上面的 `# Site` 区域，提交即可：
 
@@ -216,7 +272,7 @@ author: 塔可taco
 description: 塔可的随记本。在读大学生 / 嵌入式开发工程师……
 ```
 
-### 3.5 修改主题外观
+### 3.6 修改主题外观
 
 编辑根目录 `_config.fluid.yml`。**不需要**把官方配置整份复制过来，
 只写要改的那几项就行，其余自动沿用主题默认值。
@@ -225,7 +281,7 @@ description: 塔可的随记本。在读大学生 / 嵌入式开发工程师…�
 > （该文件只在本地 `npm install` 后存在，也可以在
 > [GitHub 上查看](https://github.com/fluid-dev/hexo-theme-fluid/blob/master/_config.yml)）。
 
-### 3.6 查看部署状态
+### 3.7 查看部署状态
 
 每次推送后，打开 <https://github.com/wzqvip/wzqvip.github.io/actions>
 可以看构建进度。绿色 ✅ 表示已上线，红色 ❌ 表示构建失败，点进去看日志。
@@ -282,10 +338,17 @@ marked:
 这两个是 **front-matter** 里的字段，**不走**上面的解析规则，
 必须写「以 `/` 开头的站点根路径」：
 
-1. 把图片放到 `source/img/`（这个目录是公共图片库，不是某篇文章专属）
-2. front-matter 里写 `index_img: /img/xxx.png`
+1. **推荐：直接指到该文章资产文件夹里的图** ——
+   写 `index_img: /posts/my-post/cover.png`
+   （图片本身仍然放在 `source/_posts/my-post/`，和正文图共用一个位置，
+   不用为了封面再拷一份到公共目录）
+2. **后台上传的图** —— 写 `index_img: /img/uploads/xxx.png`
+   （图片在 `source/img/uploads/`，这个目录是公共图片库，不归属某篇文章）
 
 > 如果写 `index_img: cover.png`，会变成 `/cover.png` → 404。
+> 反过来的坑：正文里的图片**不能**写根路径 `/posts/my-post/cover.png`——
+> 正文走 `postAsset` 解析，只写文件名 `cover.png` 就行，写成根路径虽然也能显示，
+> 但一旦将来改 permalink 就全断了。
 
 ---
 
@@ -414,7 +477,7 @@ npm run build        # 只编译，产物在 public/
 | 现象 | 原因与解决 |
 | --- | --- |
 | 图片显示不出来 | 正文里的图片路径多写了一层文件夹名。改成 `![](cover.png)`，见[第四节](#四-图片引用规范最重要) |
-| 首页封面图 404 | `index_img` 写成了相对路径。必须写成 `/img/xxx.png` 并放到 `source/img/` |
+| 首页封面图 404 | `index_img` 写的是**根路径**（必须以 `/` 开头），例如老文章用 `/posts/<slug>/xxx.png`，后台上传的图用 `/img/uploads/xxx.png`。写成相对路径会被 `url_for()` 拼错 |
 | 评论区显示配置错误 | 先跑[第二节的自检命令](#-一条命令自检-giscus-是否配置正确)定位：报 App 未安装 / Discussions 未开 / 分类 ID 不对，各有对应处理方式 |
 | 推送到 `main` 后网站没变化 | 按顺序排查：① 看 [Actions](https://github.com/wzqvip/wzqvip.github.io/actions) 里 `Deploy Hexo Blog` 是否失败；② 确认 Pages 来源仍是 `gh-pages`；③ **耐心等 1～10 分钟**——`gh-pages` 更新后 GitHub 还会再跑一次 `pages-build-deployment`，之后 CDN 仍可能缓存旧版本。想立刻确认是否已生效，可在网址后加个参数绕过缓存，例如 `?v=2` |
 | Actions 报 403 / Permission denied | 见[步骤 4](#步骤-4一般不需要确认工作流权限) |
@@ -424,6 +487,10 @@ npm run build        # 只编译，产物在 public/
 | 改了配置但线上没反应 | 检查改的是根目录的 `_config.yml` / `_config.fluid.yml`，**不是** `node_modules` 或 `themes/` 里的文件 |
 | 搜索结果为空 | 搜索索引是 Fluid 主题自己生成的（`/local-search.xml`），不需要装 `hexo-generator-search` 之类的插件；装重复插件反而会生成多余文件 |
 | 写的 `**加粗**` 没生效，页面上直接显示两个星号 | **中文标点的坑**：`**` 后面紧跟中文标点（`「`、`《`、`（` 等）时，Markdown 会认为它不能开启加粗。例如 `以及**「x」**` 渲染不出加粗。**两种解法**：把标点移到外面写 `以及「**x**」`，或在 `**` 前留一个空格写 `以及 **「x」**` |
+| 后台（Pages CMS）里看不到本仓库 | 它的 GitHub App 没装或没授权本仓库。重新打开 <https://app.pagescms.org>，退出后重新登录并授权；不确定装没装，去 <https://github.com/settings/installations> 看有没有 `Pages CMS` |
+| 后台里改完保存了，网站没变 | 后台保存 = 往仓库提交一次 commit，接下来还是走 Actions。去 [Actions](https://github.com/wzqvip/wzqvip.github.io/actions) 看构建，再按上面「推送后网站没变化」那条等 CDN |
+| 后台新建文章后网址是一串 `%E6%88%91...` | 文件名用了中文。新建时把文件名改成英文短横线形式（如 `my-post`）；**已经发布的文章不要为了好看去改名**，改名等于换网址，评论区会接不上 |
+| 后台保存后老文章的格式乱了（多出空行、HTML 被改写） | 所见即所得编辑器对原始 HTML 的处理无法提前验证。把 `.pages.yml` 里 `body` 字段的 `type: rich-text` 改成 `type: code`，就变成带 Markdown 高亮的纯文本编辑，不会做任何转换 |
 
 ---
 
@@ -438,8 +505,9 @@ npm run build        # 只编译，产物在 public/
 | `tools/` | 一次性工具（WordPress 迁移、封面挑选），**不参与构建** | ✅ 不用管 |
 | `source/css/custom.css` | 自定义样式：首页卡片与瀑布流 + 拆解板块网格 | ✅ 随便改 |
 | `source/js/custom.js` | 首页瀑布流的分栏脚本（把卡片分进两列） | ⚠️ 改前先读注释 |
-| `source/img/` | 全站公共图片（首页封面、头像、横幅） | ✅ 可新增 |
+| `source/img/` | 全站公共图片目录（目前是空的；`source/img/uploads/` 是网页版后台的媒体库，老文章的图都在各自的 `source/_posts/<slug>/` 里） | ✅ 可新增 |
 | `source/about/index.md` | 「关于」页面 | ✅ 可改 |
+| `.pages.yml` | **网页版后台（Pages CMS）的配置**：定义后台能编辑哪些字段 | ⚠️ 改前先读注释 |
 | `_config.yml` | Hexo 站点级配置（标题、网址、图片路径规则） | ✅ 谨慎改 |
 | `_config.fluid.yml` | 主题外观 + Giscus 评论配置 | ✅ 随便改 |
 | `giscus.json` | 评论防盗用：允许加载本仓库讨论的域名白名单 | ⚠️ 换域名时必须同步改 |
@@ -646,7 +714,8 @@ categories:
 
 > **头像是同步 GitHub 的**：`about.avatar` 填的是
 > `https://github.com/wzqvip.png?size=240`，所以你在 GitHub 换了头像，
-> 关于页会自动跟着变，不需要改代码。想换成本地图片就填 `/img/xxx.png`。
+> 关于页会自动跟着变，不需要改代码。想换成本地图片就填 `/img/uploads/xxx.png`
+> （用网页版后台传一张即可）。
 > 顺手也可以把 `favicon` 设成同一个地址。
 
 > 本地预览：`npm run server`，然后打开 <http://localhost:4000>。

@@ -1,0 +1,302 @@
+# =============================================================================
+#  Pages CMS 配置 —— 给这个博客配一个「在线后台」
+# =============================================================================
+#  这个文件是 Pages CMS（https://pagescms.org）的配置。它提供一个网页版后台，
+#  可以像用 WordPress 一样写文章、传图片、改「关于」页；所有改动都直接提交到
+#  本仓库，然后由 .github/workflows/deploy.yml 自动构建发布。
+#
+#  怎么用（只有第一次需要动手，大约 2 分钟）：
+#    1. 打开 https://app.pagescms.org
+#    2. 用 GitHub 登录，按提示安装它的 GitHub App，授权范围选本仓库
+#       （wzqvip/wzqvip.github.io）
+#    3. 回到首页选中本仓库，左边就会出现「文章 / 草稿 / 关于页」三个栏目
+#
+#  ⚠️ 关于图片的两套约定（都能正常显示，别慌）：
+#    · 老文章：正文里只写文件名（如 `cover.png`），图片放在
+#      source/_posts/<文章名>/ 里 —— 这是 Hexo 的 post_asset_folder 机制。
+#    · 后台上传的图：会进 source/img/uploads/，引用写成 `/img/uploads/xxx.png`。
+#    封面图（index_img）两种都行，写完整根路径即可。
+#
+#  ⚠️ 别用后台改 _config.yml / _config.fluid.yml：那些文件里有大量注释，
+#    程序化的 YAML 改写会把注释冲掉。配置文件仍然手改。
+#
+#  不想要这个后台了？直接删掉本文件即可，博客本身不受任何影响。
+#  字段语法速查：https://pagescms.org/docs/configuration/content/fields/
+# =============================================================================
+
+# ------------------------------------------------------------------ 媒体库
+# 后台上传的图片/文件放这里，引用路径为 /img/uploads/<文件名>
+media:
+  input: source/img/uploads
+  output: /img/uploads
+  # false = 保留原始文件名（URL 好认）；true 会改成随机名，避免重名覆盖。
+  rename: false
+
+# ------------------------------------------------------------------ 内容
+content:
+  # =============================================================== 文章
+  - name: posts
+    label: 文章
+    type: collection
+    path: source/_posts
+    # 新建文章时的文件名 = 网址（/posts/<文件名>/）。
+    # field: create 会在新建时让你确认一次文件名，务必用英文短横线，
+    # 例如 `my-new-post`；中文标题自动转拼音/空串会很难看。
+    # 注意：改老文章的文件名 = 改网址 = 原有评论（giscus 按路径匹配）会对不上。
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      primary: title
+      fields: [title, date, categories, tags]
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+
+      - name: date
+        label: 发布时间
+        type: date
+        required: true
+        options:
+          time: true
+          format: "yyyy-MM-dd HH:mm:ss"
+
+      - name: updated
+        label: 最后更新时间（可留空）
+        type: date
+        options:
+          time: true
+          format: "yyyy-MM-dd HH:mm:ss"
+        description: "留空则网站上不显示「更新于」。可写日期字符串的字段不支持清空。"
+
+      - name: categories
+        label: 分类
+        type: select
+        required: false
+        options:
+          values:
+            - Homelab
+            - Network
+            - Server
+            - Computer Science
+            - Teardown
+            - Charger
+            - Misc
+            - 随笔
+            - uncategorized
+        description: "只选一个！Hexo 会把「多个分类」理解成父子层级（比如 Server 下面挂 Homelab），所以本站刻意限制为单分类。真要多个分类，请去 GitHub 直接改 front-matter，写成 - [\"分类名\"] 的形式。"
+
+      - name: tags
+        label: 标签
+        type: select
+        required: false
+        options:
+          multiple: true
+          values:
+            - adguard
+            - CFW
+            - Charger
+            - CloudFlare
+            - DDNS
+            - DeepSeek
+            - DJI
+            - DNS
+            - docker
+            - Drivers
+            - FlipperZero
+            - GUI
+            - Hack
+            - Homelab
+            - HomeServer
+            - HTTPS
+            - Intel
+            - KVM
+            - Linux
+            - NAS
+            - OpenWrt
+            - PVE
+            - Python
+            - QT
+            - rsa-key
+            - Sipeed
+            - Software
+            - SSD
+            - ssh
+            - Teardown
+            - Theme
+            - Tobii
+            - ubuntu
+            - VLAN
+            - Vocechat
+            - WES
+            - WiFi-7
+            - WireGuard
+            - 短视频
+            - 广告拦截
+            - 开始
+            - 开源
+            - 幕后
+            - 故障解决
+            - 缓存策略
+            - 群晖
+            - 网管交换机
+            - 网络
+            - 虚拟机
+            - 证书
+            - 组网
+        description: "可多选。想加新标签，先在本文件上方的 values 列表里补一行，保存后再回来选。"
+
+      - name: description
+        label: 摘要
+        type: text
+        required: false
+        description: "首页卡片和分享预览里显示的一句话简介。"
+
+      - name: index_img
+        label: 首页封面图
+        type: image
+        required: false
+        description: "从媒体库选或直接上传（会存到 source/img/uploads/）。留空则首页卡片没有封面，纯文字也好看。"
+
+      - name: body
+        label: 正文
+        type: rich-text
+
+  # =============================================================== 草稿
+  # 放 source/_drafts/ 里的文章不会发布（构建命令没加 --draft），
+  # 想发布就用「移动」功能挪到「文章」，或本地手动搬文件。
+  - name: drafts
+    label: 草稿（不会发布）
+    type: collection
+    path: source/_drafts
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      primary: title
+      fields: [title, date]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+
+      - name: date
+        label: 创建时间
+        type: date
+        required: true
+        options:
+          time: true
+          format: "yyyy-MM-dd HH:mm:ss"
+
+      - name: categories
+        label: 分类
+        type: select
+        required: false
+        options:
+          values:
+            - Homelab
+            - Network
+            - Server
+            - Computer Science
+            - Teardown
+            - Charger
+            - Misc
+            - 随笔
+            - uncategorized
+
+      - name: tags
+        label: 标签
+        type: select
+        required: false
+        options:
+          multiple: true
+          values:
+            - adguard
+            - CFW
+            - Charger
+            - CloudFlare
+            - DDNS
+            - DeepSeek
+            - DJI
+            - DNS
+            - docker
+            - Drivers
+            - FlipperZero
+            - GUI
+            - Hack
+            - Homelab
+            - HomeServer
+            - HTTPS
+            - Intel
+            - KVM
+            - Linux
+            - NAS
+            - OpenWrt
+            - PVE
+            - Python
+            - QT
+            - rsa-key
+            - Sipeed
+            - Software
+            - SSD
+            - ssh
+            - Teardown
+            - Theme
+            - Tobii
+            - ubuntu
+            - VLAN
+            - Vocechat
+            - WES
+            - WiFi-7
+            - WireGuard
+            - 短视频
+            - 广告拦截
+            - 开始
+            - 开源
+            - 幕后
+            - 故障解决
+            - 缓存策略
+            - 群晖
+            - 网管交换机
+            - 网络
+            - 虚拟机
+            - 证书
+            - 组网
+
+      - name: body
+        label: 正文
+        type: rich-text
+
+  # =============================================================== 关于页
+  - name: about
+    label: 「关于」页
+    type: file
+    path: source/about/index.md
+    fields:
+      - name: title
+        label: 页面标题
+        type: string
+
+      - name: layout
+        label: 版式（别改）
+        type: string
+        readonly: true
+        description: "必须保持 about，改了页面就散架。"
+
+      - name: comments
+        label: 显示评论区
+        type: boolean
+
+      - name: body
+        label: 正文
+        type: rich-text
