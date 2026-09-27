@@ -423,6 +423,7 @@ npm run build        # 只编译，产物在 public/
 | 文章「最后更新」都变成今天 | `_config.yml` 里 `updated_option` 被改回 `mtime` 了。Actions 每次都是全新 clone，所以要用 `empty` |
 | 改了配置但线上没反应 | 检查改的是根目录的 `_config.yml` / `_config.fluid.yml`，**不是** `node_modules` 或 `themes/` 里的文件 |
 | 搜索结果为空 | 搜索索引是 Fluid 主题自己生成的（`/local-search.xml`），不需要装 `hexo-generator-search` 之类的插件；装重复插件反而会生成多余文件 |
+| 写的 `**加粗**` 没生效，页面上直接显示两个星号 | **中文标点的坑**：`**` 后面紧跟中文标点（`「`、`《`、`（` 等）时，Markdown 会认为它不能开启加粗。例如 `以及**「x」**` 渲染不出加粗。**两种解法**：把标点移到外面写 `以及「**x**」`，或在 `**` 前留一个空格写 `以及 **「x」**` |
 
 ---
 
