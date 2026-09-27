@@ -7,7 +7,6 @@ tags:
   - "CloudFlare"
   - "Homelab"
 description: "大概就是一个比较奇妙的需求。 家宽有公网，但是封了80端口。 于是需要使用自定义端口+Cloudflare Origin Rules重写到80端口实现。 之前Typecho很顺利，但是wordpress遇到了一堆问题。 从这里记录一下解决方…"
-index_img: "/img/covers/wordpress-cloudflare-rules.svg"
 ---
 
 大概就是一个比较奇妙的需求。 家宽有公网，但是封了80端口。 于是需要使用自定义端口+Cloudflare Origin Rules重写到80端口实现。 之前Typecho很顺利，但是wordpress遇到了一堆问题。 从这里记录一下解决方案。

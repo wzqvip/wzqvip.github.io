@@ -7,7 +7,6 @@ tags:
   - "Tobii"
   - "Software"
 description: "Tobii Software Archive: 官网的交互逻辑太烂了，以及ScreenTime似乎下架了。 存档用。Tobii 4C 可用 TobiiGameHub.4.2.0-ci4-Setup.exe TobiiGhost.1.14.1…"
-index_img: "/img/covers/tobiiscreentime-tobii-software-download.svg"
 ---
 
 Tobii Software Archive:

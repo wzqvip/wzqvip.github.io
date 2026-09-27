@@ -8,7 +8,6 @@ tags:
   - "短视频"
   - "广告拦截"
 description: "个人使用的一些广告拦截规则与禁用短视频平台规则. 适用Adguard Home, 营造一个良好健康的网络环境. 广告屏蔽,Cookie弹窗拦截,阻止家人刷抖音快手头条等短视频平台. 以及使用加密DNS. Adguard Home/ Pi H…"
-index_img: "/img/covers/adguard-dns.svg"
 ---
 
 个人使用的一些广告拦截规则与禁用短视频平台规则. 适用Adguard Home, 营造一个良好健康的网络环境. 广告屏蔽,Cookie弹窗拦截,阻止家人刷抖音快手头条等短视频平台. 以及使用加密DNS.

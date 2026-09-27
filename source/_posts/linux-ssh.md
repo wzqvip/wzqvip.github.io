@@ -8,7 +8,6 @@ tags:
   - "ssh"
   - "rsa-key"
 description: "生成key指南。 以及如果使用keygen生成.pub（SSH2)的话要转换成rsa普通格式"
-index_img: "/img/covers/linux-ssh.svg"
 ---
 
 生成key指南。 以及如果使用keygen生成.pub（SSH2)的话要转换成rsa普通格式

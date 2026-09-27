@@ -14,27 +14,34 @@
    ========================================================================== */
 
 /* ==========================================================================
-   1. 首页：把「单栏流水」改成两栏卡片墙
+   1. 首页：瀑布流（两列独立堆叠）
+   --------------------------------------------------------------------------
+   为什么不是 CSS 网格：
+     网格里同一行的两张卡片**必然等高**。只要一篇有配图、一篇没有，高度差就会
+     变成一片空白 —— 要么卡片内部空一块，要么卡片下方空一块，躲不掉。
+   为什么不是原生 CSS 瀑布流：
+     `grid-template-rows: masonry` 实测 Chrome 153 仍不支持。
+   所以：由 source/js/custom.js 把卡片按顺序分进两列，每列各自纵向堆叠。
+     现在有图 / 无图混排也不会留白，而且不需要测量高度、不需要监听图片加载。
    ========================================================================== */
 
-@media (min-width: 768px) {
-  /* 只对「装着首页卡片的那个容器」生效。
-     用 :has() 是为了不影响文章页 / 归档页 / 分类页
-     —— 它们共用同一套 Bootstrap 栅格。 */
-  #board .col-12:has(> .index-card) {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.75rem;
-    /* 用 start 而不是 stretch：没配图的文章卡片内容本来就少，
-       stretch 会把它拉得和隔壁带图的一样高，中间空出一大块。 */
-    align-items: start;
-  }
+.index-masonry {
+  display: flex;
+  gap: 1.75rem;
+  align-items: flex-start;
+}
 
-  /* 分页器是容器的兄弟节点，让它横跨整行而不是挤进一个格子 */
-  #board .col-12:has(> .index-card) > nav[aria-label='navigation'] {
-    grid-column: 1 / -1;
-    margin-top: 0.5rem;
-  }
+.index-col {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 1.75rem;
+  min-width: 0; /* 防止长内容把某一列撑宽 */
+}
+
+/* 分栏后卡片间距交给 gap，去掉主题默认的 margin-bottom */
+.index-masonry .index-card {
+  margin-bottom: 0;
 }
 
 /* ---------- 卡片本体 ----------

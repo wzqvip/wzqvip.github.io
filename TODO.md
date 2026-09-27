@@ -64,16 +64,14 @@
 - [x] 站点信息转正式：`title` = **塔可随记**、`subtitle` = 记录用、
       `author` = **塔可taco**、`description` / `keywords` 已补
 - [x] 「关于」页信息：昵称改为「塔可taco」，简介「在读大学生 / 嵌入式开发工程师」
-- [x] 首页改成两栏卡片墙（22 篇文章自动挑到预览图，其余保留纯文字卡片）
+- [x] 首页改成**两列瀑布流**（22 篇文章自动挑到预览图，没图的保持无图、不再硬塞占位图）
 - [x] 「拆解」类文章移出首页，独立成 <https://wzqvip.github.io/teardown/> 板块
-- [ ] 把头像换成自己的图片（放到 `source/img/` 后改 `about.avatar`）
-- [ ] 把 `favicon` 换成自己的图标（现在是主题自带的 Fluid 图标）
+- [x] **「关于」页头像同步 GitHub**：`about.avatar` 指向
+      `https://github.com/wzqvip.png?size=240`，以后换 GitHub 头像会自动跟着变
+- [ ] 把 `favicon` 换成自己的图标（现在是主题自带的 Fluid 图标；
+      也可直接指向同一个 GitHub 头像地址）
 - [ ] 首页横幅图还是主题默认图，可换成自己的照片
       （`_config.fluid.yml` → `index.banner_img`，图片放 `source/img/`）
-- [x] 14 篇没有真实配图的文章：由 `tools/gen-covers.mjs` 生成抽象 SVG 封面，
-      首页三页 30 张卡片全部有封面、不再出现「有图/无图混排导致留白」
-- [ ] 生成的占位封面目前是「对角渐变 + 柔光」，饱和度已压低以贴近暗色截图；
-      若想更素可调 `tools/gen-covers.mjs` 里的 HSL 参数后重跑
 - [ ] 3 篇文章的封面偏重（`flipper-zero` 1159 KB、`flipper-zero-avr-flasher-arduino` 798 KB、
       `pyqt-gui` 595 KB）—— 原图就没有小尺寸变体，配合懒加载问题不大，
       真要优化可缩小后再换
@@ -168,8 +166,8 @@
 - [x] 图片懒加载（Fluid 内置 + `marked.lazyload`）
 - [x] 暗色模式（Fluid 内置，Giscus 主题随站点明暗自动切换）
 - [x] 404 页面（Fluid 内置，5 秒后跳回首页）
-- [x] **首页改为两栏卡片墙**：预览图（`index_img`）+ 卡片面板 / 圆角 / 悬停浮起，
-      样式在 `source/css/custom.css`
+- [x] **首页改为两列瀑布流**：预览图（`index_img`）+ 卡片面板 / 圆角 / 悬停浮起，
+      样式在 `source/css/custom.css`，分栏逻辑在 `source/js/custom.js`
 - [x] **「拆解」独立板块** `/teardown/`：响应式卡片网格 + 封面图 + 导航栏入口
 - [x] 首屏横幅高度 100vh → 70vh：之前要滚一整屏才看得到文章
 - [x] 首页副标题改为随机显示 4 条（`index.slogan.text` 列表）
@@ -219,14 +217,16 @@
 | 2026-09-26 | 移除已无必要的 `source/_posts/.gitkeep`（该目录已有真实内容） |
 | 2026-09-26 | 重写 `hello-world` 为展示页：新增 4 张表情包与真实 token 账单，4 组原始示例全部保留 |
 | 2026-09-26 | 站点更名「塔可随记」：title / author(塔可taco) / subtitle(记录用) / about 昵称与简介 |
-| 2026-09-26 | 首页从「单栏流水」改为两栏卡片墙：新增 `source/css/custom.css`，22 篇文章自动挑到预览图 |
+| 2026-09-26 | 首页从「单栏流水」改为两栏布局：新增 `source/css/custom.css`，22 篇文章自动挑到预览图 |
 | 2026-09-26 | 「拆解」类文章移出首页，新增 `/teardown/` 独立板块页（`scripts/teardown.js`）+ 导航栏入口 |
 | 2026-09-26 | 修复构建噪音：`scripts/` 是 Hexo 插件目录，迁移脚本放这里每次构建都报 Script load failed，已移到 `tools/` |
 | 2026-09-26 | 新增 `tools/pick-covers.mjs`：按清晰度/宽高比/体积自动为文章挑首页封面 |
 | 2026-09-26 | 首屏横幅 100vh → 70vh；拆解页日期改用 Hexo 核心 date 助手，修正 UTC 导致的差一天 |
 | 2026-09-26 | hello-world 的「主人说过的话」按真实对话重写（把「嗯嗯啊啊」换成真实发言 + 我做了什么） |
 | 2026-09-26 | 修复 Markdown 中文标点坑：`**「x」**` 加粗失效，改为 `「**x**」`；已写入 README 常见问题 |
-| 2026-09-26 | 首页卡片留白修复：新增 `tools/gen-covers.mjs`，为 14 篇无图文章生成抽象 SVG 封面（每张 ~1KB），两栏网格不再有空缺 |
+| 2026-09-26 | 改用**瀑布流**替代网格：网格同行必然等高、有无配图混排必有留白，而原生 `grid-template-rows: masonry` Chrome 153 仍不支持 → 新增 `source/js/custom.js` 分栏 |
+| 2026-09-26 | 撤销上面那次「生成占位封面」的做法并删除 `tools/gen-covers.mjs`：没配图的文章就保持无图，由瀑布流自然错开 |
+| 2026-09-26 | 「关于」页头像改为同步 GitHub：`about.avatar` → `https://github.com/wzqvip.png?size=240` |
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 
 ---

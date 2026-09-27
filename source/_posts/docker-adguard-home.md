@@ -8,7 +8,6 @@ tags:
   - "docker"
   - "ubuntu"
 description: "家里配置Adguard Home（DNS) 广告拦截与访问控制。 路由器安装的话比较麻烦而且容易翻车，刚好有个Ubuntu服务器，于是就用Docker安装做DNS服务器，路由器DNS指向Adguard。"
-index_img: "/img/covers/docker-adguard-home.svg"
 ---
 
 家里配置Adguard Home（DNS) 广告拦截与访问控制。 路由器安装的话比较麻烦而且容易翻车，刚好有个Ubuntu服务器，于是就用Docker安装做DNS服务器，路由器DNS指向Adguard。

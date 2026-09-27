@@ -15,9 +15,11 @@
 #  官方文档      ：https://hexo.fluid-dev.com/docs/guide/
 # =============================================================================
 
-# 自定义样式：首页卡片墙 + 「拆解」板块网格都在这里面
+# 自定义样式：首页瀑布流 + 「拆解」板块网格都在这里面
 # 主题的 css.ejs 会把它放在 bootstrap 与 main.css 之后加载，所以能覆盖默认样式
 custom_css: /css/custom.css
+# 自定义脚本：把首页卡片按顺序分进两列，实现瀑布流（详见 source/js/custom.js）
+custom_js: /js/custom.js
 
 # 导航栏
 navbar:
@@ -53,9 +55,9 @@ about:
   name: "塔可taco"
   # 一句话简介
   intro: "在读大学生 / 嵌入式开发工程师"
-  # 头像：默认用主题自带的 /img/avatar.png。
-  # 想换成自己的：把图片传到 source/img/ 下，这里改成 /img/你的文件名
-  avatar: /img/avatar.png
+  # 头像：直接同步 GitHub 头像 —— 以后在 GitHub 改头像，这里会自动跟着变
+  # 想换成别的图片：放到 source/img/ 下，这里改成 /img/你的文件名
+  avatar: https://github.com/wzqvip.png?size=240
   # 社交图标，class 可在 https://hexo.fluid-dev.com/docs/icon/ 查
   icons:
     - { class: "iconfont icon-github-fill", link: "https://github.com/wzqvip", tip: "GitHub" }

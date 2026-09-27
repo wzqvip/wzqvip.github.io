@@ -159,10 +159,8 @@ for (const file of posts) {
   const slug = path.basename(file, '.md');
   const assetDir = path.join(POSTS_DIR, slug);
 
-  // 已经有「真实」封面就不动；但 tools/gen-covers.mjs 生成的占位封面要允许被真图替换
-  const existing = (parts.fm.match(/^index_img\s*:\s*"?([^"\n]*)"?/m) || [, ''])[1].trim();
-  const existingIsGenerated = existing.startsWith('/img/covers/');
-  if (existing && !existingIsGenerated && !FORCE) {
+  // 已经有封面就不动（想重挑用 --force）
+  if (/^index_img\s*:/m.test(parts.fm) && !FORCE) {
     rows.push({ file, skipped: '已有 index_img' });
     continue;
   }

@@ -434,9 +434,9 @@ npm run build        # 只编译，产物在 public/
 | `source/_posts/` | **文章 Markdown 和图片（日常就改这里）** | ✅ 随便改 |
 | `source/_drafts/` | 草稿，**不会发布**（本地 `npm run dev` 才能预览） | ✅ 随便改 |
 | `scripts/` | **Hexo 插件目录**（Hexo 会自动加载里面的 `.js`）：「拆解」板块页就是这里生成的 | ⚠️ 改前先读注释 |
-| `tools/` | 一次性工具（WordPress 迁移、封面挑选与生成），**不参与构建** | ✅ 不用管 |
-| `source/img/covers/` | 没有真实配图的文章所用的**抽象封面（SVG）** | ✅ 可重跑生成 |
-| `source/css/custom.css` | 自定义样式：首页卡片墙 + 拆解板块网格 | ✅ 随便改 |
+| `tools/` | 一次性工具（WordPress 迁移、封面挑选），**不参与构建** | ✅ 不用管 |
+| `source/css/custom.css` | 自定义样式：首页卡片与瀑布流 + 拆解板块网格 | ✅ 随便改 |
+| `source/js/custom.js` | 首页瀑布流的分栏脚本（把卡片分进两列） | ⚠️ 改前先读注释 |
 | `source/img/` | 全站公共图片（首页封面、头像、横幅） | ✅ 可新增 |
 | `source/about/index.md` | 「关于」页面 | ✅ 可改 |
 | `_config.yml` | Hexo 站点级配置（标题、网址、图片路径规则） | ✅ 谨慎改 |
@@ -522,17 +522,18 @@ node tools/migrate-wordpress.mjs <dump.sql> <uploads目录> [--dry-run]
 
 ## 十、首页排版与「拆解」板块
 
-### 首页：两栏卡片墙
+### 首页：瀑布流（两列独立堆叠）
 
-主题默认的首页是「单栏流水」：一行行排下来，没配图就纯文字。现在改成**两栏卡片墙**，
-每张卡片带 16:10 的预览图、圆角边框，鼠标悬停会轻微浮起。
+主题默认的首页是「单栏流水」：一行行排下来，没配图就纯文字。现在是**两列瀑布流**，
+每张卡片带预览图（有就显示，没有就不显示）、圆角边框，鼠标悬停会轻微浮起。
 
-它由两部分配合而成：
+它由三部分配合而成：
 
 | 部分 | 作用 | 位置 |
 | --- | --- | --- |
-| `index_img` | 每篇文章的预览图 | 各篇文章的 front-matter |
-| `.index-card` 样式 | 把卡片变成真卡片，并把容器变成两栏网格 | `source/css/custom.css` |
+| `index_img` | 文章的预览图（**可选**，没配图的文章不显示图） | 各篇文章的 front-matter |
+| 卡片样式 | 卡片面板 / 圆角 / 悬停浮起 / 封面 16:10 | `source/css/custom.css` |
+| 分栏脚本 | 把卡片按顺序分进两列，实现瀑布流 | `source/js/custom.js` |
 
 > ⚠️ `index_img` 和**正文**图片的写法不一样：正文里只写文件名，
 > 而 `index_img` 走主题的 `url_for()`，必须写**站点根路径**：
@@ -541,9 +542,33 @@ node tools/migrate-wordpress.mjs <dump.sql> <uploads目录> [--dry-run]
 > index_img: "/posts/文章文件名/图片名.png"
 > ```
 
-**预览图是怎么挑的**：`tools/pick-covers.mjs` 自动为每篇文章挑一张 ——
-只从「正文里真正引用过、且存在于该文章资产文件夹」的图里选，
-优先「裁成 16:10 后仍够清晰、宽高比接近 16:10、体积不大」的那张。
+#### 为什么要用 JS 分栏，而不是 CSS 网格
+
+**CSS 网格做不到瀑布流**：网格里同一行的两张卡片**必然等高**。只要一篇有配图、
+一篇没有，高度差就会变成一片空白 —— 要么卡片内部空一块，要么卡片下方空一块，
+怎么调都躲不掉（`align-items: start` 只是把空白从卡片里挪到卡片下面）。
+
+**原生 CSS 瀑布流还不能用**：`grid-template-rows: masonry` 实测在 Chrome 153
+仍不支持（`CSS.supports` 返回 false）。
+
+所以改成：用一小段 JS（`source/js/custom.js`，约 60 行，无依赖）把卡片
+**按奇数进左列、偶数进右列**分进两个容器，之后每列各自纵向堆叠。
+
+这个做法有三个好处：
+
+1. 分栏后**不需要测量高度、也不需要监听图片加载** —— 每列是独立的纵向流，
+   图片加载完那一列自己会长高，天然不会留洞；
+2. 从左到右读仍然是时间倒序（第 1 篇左上、第 2 篇右上、第 3 篇左列第二张……）；
+3. 窄屏（< 768px）自动保持单列，无需额外处理。
+
+> 脚本是同步执行的（主题把它放在 `<body>` 末尾），会赶在首次绘制前完成分栏，
+> 不会出现「先单列再跳成两列」的闪烁。
+
+#### 预览图是怎么挑的
+
+`tools/pick-covers.mjs` 自动为每篇文章挑一张 —— 只从「正文里真正引用过、
+且存在于该文章资产文件夹」的图里选，优先「裁成 16:10 后仍够清晰、
+宽高比接近 16:10、体积不大」的那张。
 
 ```bash
 node tools/pick-covers.mjs --dry-run   # 先看会挑哪张，不写入
@@ -551,25 +576,10 @@ node tools/pick-covers.mjs             # 写进 front-matter
 node tools/pick-covers.mjs --force     # 重新挑一遍（覆盖已有的）
 ```
 
-**正文里没有可用配图的文章，会由 `tools/gen-covers.mjs` 生成一张抽象封面**：
+**没有可用图片的文章就保持无图**（通常是纯文字笔记）。瀑布流本来就适合
+高矮不一的卡片，所以不需要为了对齐给它们硬塞一张图。
 
-```bash
-node tools/gen-covers.mjs --dry-run    # 先看会给哪几篇生成
-node tools/gen-covers.mjs              # 生成到 source/img/covers/ 并写入 index_img
-```
-
-> **为什么必须每篇都有封面？**
-> 首页是两栏网格，**同一行的两张卡片必然等高**。只要一张有 16:10 封面、
-> 一张没有，高度差就会变成一片空白（要么卡片内部空一块、要么卡片下方空一块）。
-> 让每篇都有等高的封面，网格才齐整。
-
-> **为什么生成的是 SVG？**
-> 封面只是「对角渐变 + 两团柔光」，没有细节。存成 PNG 每张要 ~64 KB，
-> 存成 SVG 只要 ~1 KB，14 张合计 14.6 KB，而且放多大都不糊。
-
-生成的封面放在 `source/img/covers/<slug>.svg`，路径以 `/img/covers/` 开头。
-以后某篇文章补了真实截图，跑一次 `tools/pick-covers.mjs` 就会自动换成真图
-（该脚本把 `/img/covers/` 视为占位，优先级最低）。
+想给某篇单独指定封面，直接在 front-matter 里加一行 `index_img` 即可。
 
 ### 「拆解」板块：`/teardown/`
 
@@ -598,10 +608,17 @@ categories:
 
 | 想改什么 | 改哪里 |
 | --- | --- |
-| 卡片颜色 / 圆角 / 悬停 / 栅格列数 | `source/css/custom.css` |
+| 卡片颜色 / 圆角 / 悬停 / 封面比例 | `source/css/custom.css` |
+| 瀑布流分几列、断点、卡片顺序 | `source/js/custom.js` + `custom.css` 里的 `.index-masonry` |
 | 首屏横幅高度 | `_config.fluid.yml` → `index.banner_img_height`（当前 `70`） |
 | 首页副标题 | `_config.fluid.yml` → `index.slogan.text`（可写列表，刷新随机显示） |
 | 导航栏菜单 | `_config.fluid.yml` → `navbar.menu` |
+| 「关于」页头像 | `_config.fluid.yml` → `about.avatar`，当前直接指向 GitHub 头像 |
+
+> **头像是同步 GitHub 的**：`about.avatar` 填的是
+> `https://github.com/wzqvip.png?size=240`，所以你在 GitHub 换了头像，
+> 关于页会自动跟着变，不需要改代码。想换成本地图片就填 `/img/xxx.png`。
+> 顺手也可以把 `favicon` 设成同一个地址。
 
 > 本地预览：`npm run server`，然后打开 <http://localhost:4000>。
 
