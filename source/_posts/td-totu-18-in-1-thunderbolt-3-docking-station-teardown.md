@@ -15,7 +15,7 @@ index_img: "/posts/td-totu-18-in-1-thunderbolt-3-docking-station-teardown/912b10
 
 ## PCB
 
-[![](20241016_081953_compressed-225x300.jpeg)](20241016_081953_compressed.jpeg)[![](20241016_082004_compressed-225x300.jpeg)](20241016_082004_compressed.jpeg) Main PCB [![](20241016_082202_compressed-225x300.jpeg)](20241016_082202_compressed.jpeg) [![](20241016_082208_compressed-225x300.jpeg)](20241016_082208_compressed.jpeg)[![Thunderbolt 3 Module 1](https://www.acp-tech.com/uploads/images/20231228/78de117472280fdc09d6ce410eb171bd.jpg)](20241016_082208_compressed.jpeg) Thunderbolt3 Module: JHL7440. It's a single M.2 slot version, doesn't have PCIE3.0 x4.
+[![](20241016_081953_compressed-225x300.jpeg)](20241016_081953_compressed.jpeg)[![](20241016_082004_compressed-225x300.jpeg)](20241016_082004_compressed.jpeg) Main PCB [![](20241016_082202_compressed-225x300.jpeg)](20241016_082202_compressed.jpeg) [![](20241016_082208_compressed-225x300.jpeg)](20241016_082208_compressed.jpeg)[![Thunderbolt 3 Module 1](thunderbolt3-jhl7440-module.jpg)](20241016_082208_compressed.jpeg) Thunderbolt3 Module: JHL7440. It's a single M.2 slot version, doesn't have PCIE3.0 x4.
 
 <details>
 <summary>Another version has dual M.2 slot (NOT IN THIS PRODUCT)</summary>

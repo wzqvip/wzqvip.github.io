@@ -111,8 +111,10 @@
 
 ### 待办
 
-- [ ] **决定两张第三方外链图怎么处理**：`edit.wpgdadawant.com` 与 `www.acp-tech.com` 的图
-      目前保持绝对 URL（不是你的文件，未收进公开仓库）。要么下载本地化，要么换成自己的图
+- [x] **两张第三方外链图已本地化**（原来是厂商官网的外链，怕站点关停就废了）：
+      - `edit.wpgdadawant.com/.../6.jpg` → `td-owc-thunderbolt4-hub-teardown/jhl8440-controller.jpg`（952×606）
+      - `www.acp-tech.com/.../78de1174….jpg` → `td-totu-18-in-1-…-teardown/thunderbolt3-jhl7440-module.jpg`（800×800）
+      已改写为裸文件名。**全站现在只剩关于页头像一处外站图片**（那是故意同步 GitHub 的）
 - [ ] 逐篇人工抽查排版（重点看 `[collapse]` 折叠块、规格表、代码块）
 - [ ] 核对分类（8 个）与标签（49 个）是否需要合并精简
 - [ ] 旧站评论无法自动迁移；如需保留，从旧站评论表 / Discussions 人工搬运
@@ -227,6 +229,7 @@
 | 2026-09-26 | 改用**瀑布流**替代网格：网格同行必然等高、有无配图混排必有留白，而原生 `grid-template-rows: masonry` Chrome 153 仍不支持 → 新增 `source/js/custom.js` 分栏 |
 | 2026-09-26 | 撤销上面那次「生成占位封面」的做法并删除 `tools/gen-covers.mjs`：没配图的文章就保持无图，由瀑布流自然错开 |
 | 2026-09-26 | 「关于」页头像改为同步 GitHub：`about.avatar` → `https://github.com/wzqvip.png?size=240` |
+| 2026-09-26 | 两张第三方外链图本地化进各自文章的资产文件夹，改写为裸文件名；README 里那节说明已删除 |
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 
 ---
