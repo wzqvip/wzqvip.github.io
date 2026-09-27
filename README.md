@@ -414,7 +414,7 @@ npm run build        # 只编译，产物在 public/
 | 图片显示不出来 | 正文里的图片路径多写了一层文件夹名。改成 `![](cover.png)`，见[第四节](#四-图片引用规范最重要) |
 | 首页封面图 404 | `index_img` 写成了相对路径。必须写成 `/img/xxx.png` 并放到 `source/img/` |
 | 评论区显示配置错误 | 先跑[第二节的自检命令](#-一条命令自检-giscus-是否配置正确)定位：报 App 未安装 / Discussions 未开 / 分类 ID 不对，各有对应处理方式 |
-| 推送到 `main` 后网站没变化 | ① 看 [Actions](https://github.com/wzqvip/wzqvip.github.io/actions) 是否构建失败；② 确认 Pages 来源已改成 `gh-pages` 分支 |
+| 推送到 `main` 后网站没变化 | 按顺序排查：① 看 [Actions](https://github.com/wzqvip/wzqvip.github.io/actions) 里 `Deploy Hexo Blog` 是否失败；② 确认 Pages 来源仍是 `gh-pages`；③ **耐心等 1～10 分钟**——`gh-pages` 更新后 GitHub 还会再跑一次 `pages-build-deployment`，之后 CDN 仍可能缓存旧版本。想立刻确认是否已生效，可在网址后加个参数绕过缓存，例如 `?v=2` |
 | Actions 报 403 / Permission denied | 见[步骤 4](#步骤-4一般不需要确认工作流权限) |
 | 文章时间差了 8 小时 | `_config.yml` 里 `timezone` 被改掉了，必须是 `'Asia/Shanghai'` |
 | 文章显示的时间对，但归档到了上一个月／上一年 | Hexo 的归档路径按 **UTC** 计算。北京时间凌晨（00:00–07:59）的文章，UTC 还停在前一天，于是会落到上一个归档目录。把发布时间写在 **08:00 之后**即可对齐；只影响 `/archives/` 的目录名，不影响文章页显示的时间 |
