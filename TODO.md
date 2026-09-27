@@ -199,6 +199,12 @@
       ② 确认所见即所得编辑器没有吃掉正文里的 `<!-- more -->`（摘要分隔符）
       和 `<details>` 原始 HTML。若有异常，把 `.pages.yml` 里 `body` 的
       `type: rich-text` 改成 `type: code`（按 Markdown 高亮，不做任何转换）
+- [ ] **定稿新版「关于」页**：草稿在 `source/_drafts/about-v2.md`
+      （本地已验证渲染正常：`npx hexo generate --draft` 后看 `/posts/about-v2/`）。
+      定稿后：① `git mv source/_drafts/about-v2.md source/about/index.md`，
+      删掉文件开头的草稿注释；② 把 `_config.fluid.yml` 的 `about.intro`
+      从「在读大学生 / 嵌入式开发工程师」改成博士在读的说法
+      （按自己情况删减草稿里的内容，尤其是我加的玩笑话）
 - [ ] **Giscus 主题配色微调**：改用 Fluid 官方配色 CSS
       （`_config.fluid.yml` 里 `theme-light` / `theme-dark` 换成注释中的两个 URL）
 - [ ] **Giscus 交互微调**：按需调整 `reactions-enabled`、`input-position`，或改用 `mapping: og:title`
@@ -261,6 +267,8 @@
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 | 2026-09-26 | 新增网页版后台配置 `.pages.yml`（Pages CMS）：文章/草稿/关于页三栏目 + `/img/uploads` 媒体库；`source/img/uploads/.gitkeep` 占位（Hexo 会忽略点开头的文件，不会进 `public/`） |
 | 2026-09-26 | README 新增 3.1 节「图形界面后台」并把原子节顺延为 3.2~3.7，文件速查表补 `.pages.yml` |
+| 2026-09-28 | 新增 `source/_drafts/about-v2.md`：重写「关于」页自述（原科技树是一棵没有重点的树）。内容依据 GitHub 仓库 + 个人主页 README + 本站文章，按「现在做什么 / 怎么走到这儿 / 会点什么 / 最近在折腾 / 这个博客写什么」重排 |
+| 2026-09-28 | 核查到两处过期信息（未改动，留给本人确认）：① `_config.fluid.yml` 的 `about.intro` 仍写「在读大学生 / 嵌入式开发工程师」，与实际情况（博士在读）不符；② GitHub 个人主页的博客链接指向 `https://blog.tacoin.site`，该域名 CNAME 到 GitHub Pages 但**只有 HTTP 能开、HTTPS 报证书错误**（Pages 里没配自定义域名） |
 
 ---
 
