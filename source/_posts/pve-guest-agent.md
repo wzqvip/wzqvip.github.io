@@ -4,6 +4,7 @@ date: 2024-09-18 21:49:47
 categories:
   - "Homelab"
 description: "配置之后可以查看客户机通过DHCP获取到的ip地址，方便管理。 官方教程： Qemu-guest-agent"
+index_img: "/posts/pve-guest-agent/2332534920.png"
 ---
 
 配置之后可以查看客户机通过DHCP获取到的ip地址，方便管理。

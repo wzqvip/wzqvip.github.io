@@ -1,0 +1,310 @@
+/* ==========================================================================
+   塔可随记 · 自定义样式
+   --------------------------------------------------------------------------
+   由 _config.fluid.yml 的 `custom_css: /css/custom.css` 引入。
+   Fluid 的 css.ejs 会把它放在 bootstrap.min.css 与 main.css **之后**加载，
+   所以同优先级下这里的规则会覆盖主题默认值。
+
+   配色一律走 Fluid 暴露的 CSS 变量，这样亮色 / 暗色模式会自动跟随，
+   不需要自己再写一套 dark 覆盖：
+     --board-bg-color  面板底色
+     --line-color      分隔线
+     --text-color / --sec-text-color   正文 / 次要文字
+     --link-hover-color                主题强调色
+   ========================================================================== */
+
+/* ==========================================================================
+   1. 首页：把「单栏流水」改成两栏卡片墙
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  /* 只对「装着首页卡片的那个容器」生效。
+     用 :has() 是为了不影响文章页 / 归档页 / 分类页
+     —— 它们共用同一套 Bootstrap 栅格。 */
+  #board .col-12:has(> .index-card) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+    /* 用 start 而不是 stretch：没配图的文章卡片内容本来就少，
+       stretch 会把它拉得和隔壁带图的一样高，中间空出一大块。 */
+    align-items: start;
+  }
+
+  /* 分页器是容器的兄弟节点，让它横跨整行而不是挤进一个格子 */
+  #board .col-12:has(> .index-card) > nav[aria-label='navigation'] {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+  }
+}
+
+/* ---------- 卡片本体 ----------
+   注意卡片底色不能直接用 --board-bg-color：它跟 #board 的背景是同一个颜色，
+   卡片会「融进」背景里只剩一条看不见的描边。
+   用 color-mix 把正文色掺一点进去：
+     暗色模式下 --text-color 是浅色 → 卡片比底色更亮
+     亮色模式下 --text-color 是深色 → 卡片比底色更暗
+   两种模式都自动获得层次感，不用手写 dark 覆盖。            */
+.index-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  background-color: var(--board-bg-color); /* 老浏览器兜底 */
+  background-color: color-mix(in srgb, var(--board-bg-color) 93%, var(--text-color));
+  border: 1px solid var(--line-color);
+  border: 1px solid color-mix(in srgb, var(--board-bg-color) 78%, var(--text-color));
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.index-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--link-hover-color);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* 封面：固定 16:10，避免不同尺寸的图把卡片撑得高矮不一 */
+.index-card .index-img {
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.index-card .index-img img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 0;
+  box-shadow: none;
+  background-color: transparent;
+  transition: transform 0.5s ease;
+}
+
+.index-card:hover .index-img img {
+  transform: scale(1.05);
+}
+
+/* 文字区 */
+.index-card .index-info {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 100%;
+  padding: 1rem 1.25rem 1.1rem;
+}
+
+.index-card .index-header {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  margin-bottom: 0.35rem;
+  /* 主题默认是单行省略号，在窄卡片里会把中文标题截掉，改成最多两行 */
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.index-card .index-header a {
+  color: var(--text-color);
+  transition: color 0.2s ease;
+}
+
+.index-card:hover .index-header a {
+  color: var(--link-hover-color);
+}
+
+.index-card .index-excerpt {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--sec-text-color);
+  font-size: 0.92rem;
+  line-height: 1.5rem;
+}
+
+.index-card .index-excerpt > div {
+  line-height: 1.5rem;
+  -webkit-line-clamp: 3;
+}
+
+/* 底部元信息：贴到卡片底部，让同一行的卡片对齐 */
+.index-card .index-btm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.9rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--line-color);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.index-card .index-btm .post-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* 小屏：退回单栏，但保留卡片样式 */
+@media (max-width: 767px) {
+  .index-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .index-card .index-info {
+    padding: 0.9rem 1rem 1rem;
+  }
+}
+
+/* ==========================================================================
+   2.「拆解」板块：/teardown/ 的卡片网格
+   --------------------------------------------------------------------------
+   这段 HTML 由 scripts/teardown.js 生成（见该文件顶部的注释）。
+   ========================================================================== */
+
+.td-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.td-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--board-bg-color); /* 老浏览器兜底 */
+  background-color: color-mix(in srgb, var(--board-bg-color) 93%, var(--text-color));
+  border: 1px solid var(--line-color);
+  border: 1px solid color-mix(in srgb, var(--board-bg-color) 78%, var(--text-color));
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.td-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--link-hover-color);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.td-cover {
+  overflow: hidden;
+  background-color: var(--line-color);
+}
+
+.td-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.td-card:hover .td-cover img {
+  transform: scale(1.05);
+}
+
+/* 没有封面图时给一个占位区，避免卡片高度差太多 */
+.td-cover--none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  color: var(--sec-text-color);
+  font-size: 0.85rem;
+  opacity: 0.55;
+}
+
+.td-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding: 1rem 1.15rem 1.1rem;
+}
+
+.td-title {
+  margin: 0 0 0.4rem;
+  color: var(--text-color);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+.td-card:hover .td-title {
+  color: var(--link-hover-color);
+}
+
+.td-desc {
+  margin: 0 0 0.75rem;
+  color: var(--sec-text-color);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.td-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.8rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--line-color);
+  color: var(--sec-text-color);
+  font-size: 0.78rem;
+}
+
+.td-meta i {
+  margin-right: 0.2rem;
+}
+
+.td-tag {
+  color: var(--sec-text-color);
+  text-decoration: none;
+}
+
+.td-tag:hover {
+  color: var(--link-hover-color);
+  text-decoration: none;
+}
+
+/* 板块页面顶部的说明文字 */
+.td-intro {
+  margin-bottom: 0.5rem;
+  color: var(--sec-text-color);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* ==========================================================================
+   3. 细节打磨
+   ========================================================================== */
+
+/* 正文/卡片里的标签与分类链接，hover 时更明显一点 */
+.index-btm a:hover,
+.td-meta a:hover {
+  color: var(--link-hover-color);
+  text-decoration: none;
+}
+
+/* 打赏、版权这类小方块在暗色下别太亮 */
+[data-user-color-scheme='dark'] .index-card,
+[data-user-color-scheme='dark'] .td-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-user-color-scheme='dark'] .index-card:hover,
+[data-user-color-scheme='dark'] .td-card:hover {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+}

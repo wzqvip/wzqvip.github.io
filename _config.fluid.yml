@@ -15,23 +15,44 @@
 #  官方文档      ：https://hexo.fluid-dev.com/docs/guide/
 # =============================================================================
 
+# 自定义样式：首页卡片墙 + 「拆解」板块网格都在这里面
+# 主题的 css.ejs 会把它放在 bootstrap 与 main.css 之后加载，所以能覆盖默认样式
+custom_css: /css/custom.css
+
 # 导航栏
 navbar:
   # 留空则用 _config.yml 里的 title
-  blog_title: "wzqvip 的博客"
+  blog_title: "塔可随记"
+
+  menu:
+    - { key: "home", link: "/", icon: "iconfont icon-home-fill" }
+    - { name: "拆解", link: "/teardown/", icon: "iconfont icon-cube-fill" }
+    - { key: "archive", link: "/archives/", icon: "iconfont icon-archive-fill" }
+    - { key: "category", link: "/categories/", icon: "iconfont icon-category-fill" }
+    - { key: "tag", link: "/tags/", icon: "iconfont icon-tags-fill" }
+    - { key: "about", link: "/about/", icon: "iconfont icon-user-fill" }
+    #- { key: "links", link: "/links/", icon: "iconfont icon-link-fill" }
 
 # 首页
 index:
-  # 首页大字副标题，留空则用 _config.yml 里的 subtitle
+  # 首屏横幅高度（屏幕百分比）。主题默认 100，等于一整屏，
+  # 结果是要往下滚一整屏才看得到文章卡片。降到 70 让第一排卡片露出来。
+  banner_img_height: 70
+
+  # 首页大字副标题。Fluid 支持写成列表，每次刷新随机显示其中一条
   slogan:
-    text: "记录技术与生活"
+    text:
+      - "记录用"
+      - "塔可的随记本"
+      - "折腾、拆解，还有一点碎碎念"
+      - "Homelab / 网络 / 硬件"
 
 # 「关于」页（页面本体在 source/about/index.md）
 about:
   # 昵称
-  name: "wzqvip"
+  name: "塔可taco"
   # 一句话简介
-  intro: "记录技术与生活"
+  intro: "在读大学生 / 嵌入式开发工程师"
   # 头像：默认用主题自带的 /img/avatar.png。
   # 想换成自己的：把图片传到 source/img/ 下，这里改成 /img/你的文件名
   avatar: /img/avatar.png

@@ -4,6 +4,7 @@ date: 2024-11-06 00:00:00
 categories:
   - "Computer Science"
 description: "已经是老成员了，所以一边看看一边写写题解。A-E题都是CTF方向的，花了点时间做了, F题目有些猜不到, G题不在知识库。"
+index_img: "/posts/geekpie-2024-a-e/3469230795.png"
 ---
 
 已经是老成员了，所以一边看看一边写写题解。A-E题都是CTF方向的，花了点时间做了, F题目有些猜不到, G题不在知识库。

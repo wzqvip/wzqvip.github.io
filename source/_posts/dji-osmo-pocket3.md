@@ -8,6 +8,7 @@ tags:
   - "DJI"
   - "Charger"
 description: "似乎很多评测都会说Pocket3是65W充电，官网也没有详细的数据。 充电头网没做的事情就自己做一下了。 结论： 握手12V2A FIXED，实际可以跑12V3A， 36W max。"
+index_img: "/posts/dji-osmo-pocket3/pocket3_charge-300x169.png"
 ---
 
 似乎很多评测都会说Pocket3是65W充电，官网也没有详细的数据。 充电头网没做的事情就自己做一下了。 结论： 握手12V2A FIXED，实际可以跑12V3A， 36W max。

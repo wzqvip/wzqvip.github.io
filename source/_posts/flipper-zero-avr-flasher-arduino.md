@@ -5,6 +5,7 @@ updated: 2025-07-25 23:13:21
 categories:
   - "Homelab"
 description: "使用 Flipper Zero AVR Flasher 读取/刷写 AVR 系 Arduino 产品固件 本教程介绍如何使用 Flipper Zero 作为 AVR 编程器 ，在离线或 PC 端 读取（Dump） 和 刷写（Flash） A…"
+index_img: "/posts/flipper-zero-avr-flasher-arduino/1898637020.png"
 ---
 
 ### **使用 Flipper Zero AVR Flasher 读取/刷写 AVR 系 Arduino 产品固件**

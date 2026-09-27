@@ -4,6 +4,7 @@ date: 2025-08-21 08:12:41
 categories:
   - "Teardown"
 description: "TOTU 18-in-1 Thunderbolt 3 USB C Docking Station with 8K DP, 1 Gbps Ethernet, USB-A 10Gbps, USB-C 3.2, SD/TF, Audio, Opt…"
+index_img: "/posts/td-totu-18-in-1-thunderbolt-3-docking-station-teardown/912b10d62e4cf31d98a16c802281e472-1-1024x548.jpeg"
 ---
 
 # TOTU 18-in-1 Thunderbolt 3 USB C Docking Station with 8K DP, 1 Gbps Ethernet, USB-A 10Gbps, USB-C 3.2, SD/TF, Audio, Optical Out

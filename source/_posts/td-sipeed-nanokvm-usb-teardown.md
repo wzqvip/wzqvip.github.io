@@ -8,6 +8,7 @@ tags:
   - "KVM"
   - "Sipeed"
 description: "NanoKVM-USB"
+index_img: "/posts/td-sipeed-nanokvm-usb-teardown/Snipaste_2025-08-19_22-05-14-300x164.png"
 ---
 
 # NanoKVM-USB

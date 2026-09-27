@@ -4,6 +4,7 @@ date: 2025-08-25 05:11:47
 categories:
   - "Teardown"
 description: "TEAMGROUP C175 128GB USB 3.2 Gen1 (USB 3.1/3.0) Read 100MB/s Flash Thumb Drive, Memory Stick Compatible with Computer/La…"
+index_img: "/posts/td-teamgroup-c175-usb-3-2-gen-1-flash-thumb-drive/photo_2025-08-24_09-10-30-300x164.jpg"
 ---
 
 # TEAMGROUP C175 128GB USB 3.2 Gen1 (USB 3.1/3.0) Read 100MB/s Flash Thumb Drive, Memory Stick Compatible with Computer/Laptop Matte Black

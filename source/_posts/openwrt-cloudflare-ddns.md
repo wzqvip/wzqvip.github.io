@@ -7,6 +7,7 @@ tags:
   - "DDNS"
   - "CloudFlare"
 description: "把域名DDNS从腾讯云迁移到了CF，CF更新快，有Origin Rules，各方面明显比较好。 为数不多的缺点是群晖原生不支持CF的DDNS服务，需要用第三方的脚本，这里不想折腾，于是就用路由器负责DDNS，这样也解决了偶尔群晖DDNS解析…"
+index_img: "/posts/openwrt-cloudflare-ddns/2468241247.png"
 ---
 
 把域名DDNS从腾讯云迁移到了CF，CF更新快，有Origin Rules，各方面明显比较好。 为数不多的缺点是群晖原生不支持CF的DDNS服务，需要用第三方的脚本，这里不想折腾，于是就用路由器负责DDNS，这样也解决了偶尔群晖DDNS解析到代理出口（可以通过添加域名白名单解决）。

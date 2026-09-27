@@ -7,6 +7,7 @@ tags:
   - "PVE"
   - "HomeServer"
 description: "PVE新建的机器默认是用的noVNC，复制粘贴都不好用，而且是视频比较难受。 修改/添加串口启动参数 /etc/default/grub GRUB\\ CMDLINE\\ LINUX\\ DEFAULT=\"quiet splash\" GRUB\\ …"
+index_img: "/posts/pve-ubuntu-debian/image.png"
 ---
 
 PVE新建的机器默认是用的noVNC，复制粘贴都不好用，而且是视频比较难受。

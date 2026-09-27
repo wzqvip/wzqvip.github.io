@@ -4,6 +4,7 @@ date: 2025-08-25 05:04:59
 categories:
   - "Teardown"
 description: "Micro Center SuperSpeed 64GB USB 3.0 Flash Drive Gum Size Memory Stick Thumb Drive Data Storage Jump Drive Bought 5-pack…"
+index_img: "/posts/td-micro-center-superspeed-usb-3-0-flash-drive/photo_2025-08-24_08-57-31-300x164.jpg"
 ---
 
 # Micro Center SuperSpeed 64GB USB 3.0 Flash Drive Gum Size Memory Stick Thumb Drive Data Storage Jump Drive

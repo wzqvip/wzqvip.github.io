@@ -7,6 +7,7 @@ tags:
   - "CloudFlare"
   - "DNS"
 description: "使用cloudflare origin rules, 将某个域名（例如 blog.tacoin.site)重定向到 带特殊端口的 服务器 (例如 tacoin.site:12345). 这样对于家宽或者同一台公网主机可以部署多个不同域名的服…"
+index_img: "/posts/cloudflare-2025/1530449257.png"
 ---
 
 使用cloudflare origin rules, 将某个域名（例如 blog.tacoin.site)重定向到 带特殊端口的 服务器 (例如 tacoin.site:12345). 这样对于家宽或者同一台公网主机可以部署多个不同域名的服务。

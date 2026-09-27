@@ -1,4 +1,4 @@
-# wzqvip 的博客
+# 塔可随记
 
 基于 **Hexo** 的静态博客，托管在 **GitHub Pages**，由 **GitHub Actions** 全自动构建发布，
 评论系统使用 **Giscus**（基于 GitHub Discussions，无后端、无数据库）。
@@ -22,6 +22,7 @@
 7. [常见问题排查](#七常见问题排查)
 8. [文件职责速查表](#八文件职责速查表)
 9. [WordPress 迁移记录](#九wordpress-迁移记录)
+10. [首页排版与「拆解」板块](#十首页排版与拆解板块)
 
 ---
 
@@ -209,10 +210,10 @@ description: 一句话摘要，用于搜索引擎和分享卡片
 编辑根目录 `_config.yml` 最上面的 `# Site` 区域，提交即可：
 
 ```yaml
-title: wzqvip 的博客     # ← 改成你的站点名
-author: wzqvip           # ← 改成你的署名
-subtitle: ''
-description: ''
+title: 塔可随记
+subtitle: 记录用
+author: 塔可taco
+description: 塔可的随记本。在读大学生 / 嵌入式开发工程师……
 ```
 
 ### 3.5 修改主题外观
@@ -431,7 +432,9 @@ npm run build        # 只编译，产物在 public/
 | --- | --- | --- |
 | `source/_posts/` | **文章 Markdown 和图片（日常就改这里）** | ✅ 随便改 |
 | `source/_drafts/` | 草稿，**不会发布**（本地 `npm run dev` 才能预览） | ✅ 随便改 |
-| `scripts/` | 一次性工具（WordPress 迁移脚本），不参与构建 | ✅ 不用管 |
+| `scripts/` | **Hexo 插件目录**（Hexo 会自动加载里面的 `.js`）：「拆解」板块页就是这里生成的 | ⚠️ 改前先读注释 |
+| `tools/` | 一次性工具（WordPress 迁移、封面挑选），**不参与构建** | ✅ 不用管 |
+| `source/css/custom.css` | 自定义样式：首页卡片墙 + 拆解板块网格 | ✅ 随便改 |
 | `source/img/` | 全站公共图片（首页封面、头像、横幅） | ✅ 可新增 |
 | `source/about/index.md` | 「关于」页面 | ✅ 可改 |
 | `_config.yml` | Hexo 站点级配置（标题、网址、图片路径规则） | ✅ 谨慎改 |
@@ -489,7 +492,7 @@ npm run build        # 只编译，产物在 public/
 
 ### 转换规则（脚本做了什么）
 
-`scripts/migrate-wordpress.mjs` 是本次迁移用的一次性工具，主要处理：
+`tools/migrate-wordpress.mjs` 是本次迁移用的一次性工具，主要处理：
 
 - 清理 WordPress Gutenberg 块注释（`<!-- wp:* -->`）
 - 短代码：`[caption]` 展开为图片 + 说明文字、`[collapse]` → `<details>/<summary>`、
@@ -504,7 +507,7 @@ npm run build        # 只编译，产物在 public/
 重新运行（需先恢复备份里的原始导出）：
 
 ```bash
-node scripts/migrate-wordpress.mjs <dump.sql> <uploads目录> [--dry-run]
+node tools/migrate-wordpress.mjs <dump.sql> <uploads目录> [--dry-run]
 ```
 
 `turndown` 与 `turndown-plugin-gfm` 是 devDependencies，只在跑这个脚本时用得到，**不影响线上构建**。
@@ -512,6 +515,75 @@ node scripts/migrate-wordpress.mjs <dump.sql> <uploads目录> [--dry-run]
 > 📦 原始导出文件（SQL 转储 + wp-content 压缩包）已移出仓库，存放在
 > `C:\Users\WANGZ\Documents\wordpress_migration_backup_2026-09-26\`。
 > SQL 转储里含 `wp_users` 密码哈希等敏感数据，**不要提交到任何公开仓库**。
+
+---
+
+## 十、首页排版与「拆解」板块
+
+### 首页：两栏卡片墙
+
+主题默认的首页是「单栏流水」：一行行排下来，没配图就纯文字。现在改成**两栏卡片墙**，
+每张卡片带 16:10 的预览图、圆角边框，鼠标悬停会轻微浮起。
+
+它由两部分配合而成：
+
+| 部分 | 作用 | 位置 |
+| --- | --- | --- |
+| `index_img` | 每篇文章的预览图 | 各篇文章的 front-matter |
+| `.index-card` 样式 | 把卡片变成真卡片，并把容器变成两栏网格 | `source/css/custom.css` |
+
+> ⚠️ `index_img` 和**正文**图片的写法不一样：正文里只写文件名，
+> 而 `index_img` 走主题的 `url_for()`，必须写**站点根路径**：
+>
+> ```yaml
+> index_img: "/posts/文章文件名/图片名.png"
+> ```
+
+**预览图是怎么挑的**：`tools/pick-covers.mjs` 自动为每篇文章挑一张 ——
+只从「正文里真正引用过、且存在于该文章资产文件夹」的图里选，
+优先「裁成 16:10 后仍够清晰、宽高比接近 16:10、体积不大」的那张。
+
+```bash
+node tools/pick-covers.mjs --dry-run   # 先看会挑哪张，不写入
+node tools/pick-covers.mjs             # 写进 front-matter
+node tools/pick-covers.mjs --force     # 重新挑一遍（覆盖已有的）
+```
+
+没有可用图片的文章会保留「纯文字卡片」，不会硬塞一张无关封面。
+
+### 「拆解」板块：`/teardown/`
+
+硬件拆解（Teardown）类文章**不再出现在首页**，单独放在
+<https://wzqvip.github.io/teardown/>，用响应式卡片网格展示，每张都有封面图。
+
+规则只有一条：**文章归到 `Teardown` 分类，就自动进这个板块、并从首页移除。**
+
+```yaml
+categories:
+  - "Teardown"
+```
+
+实现都在 `scripts/teardown.js`（Hexo 会自动把 `scripts/*.js` 当插件加载），它做两件事：
+
+1. 把「拆解」类文章从首页列表剔除 —— 用过滤器，**只动首页**，
+   归档页 / 分类页 / 标签页 / 文章页都照常保留；
+2. 生成 `/teardown/` 页面。
+
+> **为什么不用 Fluid 自带的 `archive: true`？**
+> 它确实能把文章从首页剔除，但同一个字段还被主题的 `in_scope()` 用来判断
+> 「当前页面属于哪个作用域」，会给这些文章页悄悄改掉一部分主题特性的生效范围。
+> 用过滤器只改首页列表，没有副作用。
+
+### 想改样式，改哪里
+
+| 想改什么 | 改哪里 |
+| --- | --- |
+| 卡片颜色 / 圆角 / 悬停 / 栅格列数 | `source/css/custom.css` |
+| 首屏横幅高度 | `_config.fluid.yml` → `index.banner_img_height`（当前 `70`） |
+| 首页副标题 | `_config.fluid.yml` → `index.slogan.text`（可写列表，刷新随机显示） |
+| 导航栏菜单 | `_config.fluid.yml` → `navbar.menu` |
+
+> 本地预览：`npm run server`，然后打开 <http://localhost:4000>。
 
 ---
 

@@ -9,6 +9,7 @@ tags:
   - "SSD"
   - "缓存策略"
 description: "测试条件： 13900K 32G5600 双通道D5 三星970EvoPlus(pcie3.0x4,旧款). PVE8.2.2. Windows 11 专业版. 其实无缓的效果比想象的好，WriteBack是个人最喜欢的。 其他几个缓存策略…"
+index_img: "/posts/PVE虚拟机磁盘缓存策略对比/2552383836.png"
 ---
 
 测试条件： 13900K 32G5600 双通道D5 三星970EvoPlus(pcie3.0x4,旧款). PVE8.2.2. Windows 11 专业版.

@@ -61,12 +61,20 @@
 
 ### 待办
 
-- [ ] 站点信息转正式：`_config.yml` 的 `title` / `author` / `description` / `keywords`
-      （当前为占位值：`wzqvip 的博客` / `wzqvip`）
-- [ ] 「关于」页信息转正式：`_config.fluid.yml` 的 `about` 段昵称、简介、社交图标
+- [x] 站点信息转正式：`title` = **塔可随记**、`subtitle` = 记录用、
+      `author` = **塔可taco**、`description` / `keywords` 已补
+- [x] 「关于」页信息：昵称改为「塔可taco」，简介「在读大学生 / 嵌入式开发工程师」
+- [x] 首页改成两栏卡片墙（22 篇文章自动挑到预览图，其余保留纯文字卡片）
+- [x] 「拆解」类文章移出首页，独立成 <https://wzqvip.github.io/teardown/> 板块
 - [ ] 把头像换成自己的图片（放到 `source/img/` 后改 `about.avatar`）
-- [ ] 把 `favicon` 换成自己的图标
-- [ ] 正式文章就位后，删除示例文章 `hello-world`（现在可先当作写法范例留着）
+- [ ] 把 `favicon` 换成自己的图标（现在是主题自带的 Fluid 图标）
+- [ ] 首页横幅图还是主题默认图，可换成自己的照片
+      （`_config.fluid.yml` → `index.banner_img`，图片放 `source/img/`）
+- [ ] 14 篇文章没有可用配图，仍是纯文字卡片；补几张图后再跑
+      `node tools/pick-covers.mjs` 即可自动补封面
+- [ ] 3 篇文章的封面偏重（`flipper-zero` 1159 KB、`flipper-zero-avr-flasher-arduino` 798 KB、
+      `pyqt-gui` 595 KB）—— 原图就没有小尺寸变体，配合懒加载问题不大，
+      真要优化可缩小后再换
 
 ---
 
@@ -89,7 +97,7 @@
       （`[xxx]` / `[MISSING DATASHEET]` 是正文里的字面文字，刻意未动）
 - [x] 自动生成 `description`（取 `<!-- more -->` 之前内容作首页摘要）
 - [x] 本地构建校验：**126 个页面 / 444 处站内资源引用，失效 0**
-- [x] 输出迁移脚本 `scripts/migrate-wordpress.mjs`（可重复运行，支持 `--dry-run`）
+- [x] 输出迁移脚本 `tools/migrate-wordpress.mjs`（可重复运行，支持 `--dry-run`）
 - [x] 原始导出文件移出仓库（SQL 转储含 `wp_users` 密码哈希，**绝不能提交**）
 
 ### 刻意跳过的内容
@@ -158,6 +166,11 @@
 - [x] 图片懒加载（Fluid 内置 + `marked.lazyload`）
 - [x] 暗色模式（Fluid 内置，Giscus 主题随站点明暗自动切换）
 - [x] 404 页面（Fluid 内置，5 秒后跳回首页）
+- [x] **首页改为两栏卡片墙**：预览图（`index_img`）+ 卡片面板 / 圆角 / 悬停浮起，
+      样式在 `source/css/custom.css`
+- [x] **「拆解」独立板块** `/teardown/`：响应式卡片网格 + 封面图 + 导航栏入口
+- [x] 首屏横幅高度 100vh → 70vh：之前要滚一整屏才看得到文章
+- [x] 首页副标题改为随机显示 4 条（`index.slogan.text` 列表）
 
 ### 待办
 
@@ -168,7 +181,6 @@
 - [ ] 站点地图：集成 `hexo-generator-sitemap`，提交到 Google / Bing / 百度
 - [ ] 图片优化：构建期压缩与 WebP 转换，降低首屏流量
 - [ ] 阅读体验：确认 Fluid 的字数统计 / 阅读时长 / 文章目录（TOC）符合预期
-- [ ] 首页封面：为文章统一定制 `index_img`（注意必须是 `/img/xxx.png` 根路径写法）
 - [ ] 上一篇 / 下一篇导航：确认开启并调整样式
 - [ ] 访问统计：接入 umami 或同类方案（Fluid 的 `web_analytics`）
 - [ ] 评论区新评论邮件通知（通过 GitHub Discussions 的 Watch 设置）
@@ -200,10 +212,16 @@
 | 2026-09-26 | 升级 workflow：`actions/checkout@v7`、`actions/setup-node@v7`，构建 Node 版本 20 → 24（Node 20 已 EOL） |
 | 2026-09-26 | 安装 Giscus App；用 giscus 校验接口 + 对照组确认授权有效，自检命令写入 README |
 | 2026-09-26 | 完成 WordPress 迁移：35 篇文章 + 关于页 + 1 篇草稿 + 185 个资产（91 MB），站内引用校验 0 失效 |
-| 2026-09-26 | 新增 `scripts/migrate-wordpress.mjs`（MySQL 转储 → Hexo Markdown，一次性工具，支持 --dry-run） |
+| 2026-09-26 | 新增 `tools/migrate-wordpress.mjs`（MySQL 转储 → Hexo Markdown，一次性工具，支持 --dry-run） |
 | 2026-09-26 | 关闭 Fluid 默认的 `/links/` 友链页：内容是主题作者的示例友链，且引用了主题未自带的 `/img/favicon.png`（会 404） |
 | 2026-09-26 | 移除已无必要的 `source/_posts/.gitkeep`（该目录已有真实内容） |
 | 2026-09-26 | 重写 `hello-world` 为展示页：新增 4 张表情包与真实 token 账单，4 组原始示例全部保留 |
+| 2026-09-26 | 站点更名「塔可随记」：title / author(塔可taco) / subtitle(记录用) / about 昵称与简介 |
+| 2026-09-26 | 首页从「单栏流水」改为两栏卡片墙：新增 `source/css/custom.css`，22 篇文章自动挑到预览图 |
+| 2026-09-26 | 「拆解」类文章移出首页，新增 `/teardown/` 独立板块页（`scripts/teardown.js`）+ 导航栏入口 |
+| 2026-09-26 | 修复构建噪音：`scripts/` 是 Hexo 插件目录，迁移脚本放这里每次构建都报 Script load failed，已移到 `tools/` |
+| 2026-09-26 | 新增 `tools/pick-covers.mjs`：按清晰度/宽高比/体积自动为文章挑首页封面 |
+| 2026-09-26 | 首屏横幅 100vh → 70vh；拆解页日期改用 Hexo 核心 date 助手，修正 UTC 导致的差一天 |
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 
 ---

@@ -8,6 +8,7 @@ tags:
   - "QT"
   - "GUI"
 description: "EHS实验室项目。 使用PyQT制作GUI交互，其他使用嵌入式模块。"
+index_img: "/posts/pyqt-gui/3550169507.png"
 ---
 
 ![GUI效果](3550169507.png "GUI效果")

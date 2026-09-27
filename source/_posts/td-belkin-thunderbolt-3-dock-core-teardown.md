@@ -4,6 +4,7 @@ date: 2025-08-20 20:33:13
 categories:
   - "Teardown"
 description: "Belkin Thunderbolt 3 Dock Core With Thunderbolt 3 Cable - Usb C Hub - 7-In-1 Docking Station 60W charging."
+index_img: "/posts/td-belkin-thunderbolt-3-dock-core-teardown/IMG_20250718_215012_compressed-300x225.jpeg"
 ---
 
 # Belkin Thunderbolt 3 Dock Core With Thunderbolt 3 Cable - Usb C Hub - 7-In-1 Docking Station 60W charging.

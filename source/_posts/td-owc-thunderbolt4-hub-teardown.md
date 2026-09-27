@@ -4,6 +4,7 @@ date: 2025-08-20 20:15:16
 categories:
   - "Teardown"
 description: "OWC Thunderbolt Hub with Three Thunderbolt 4 Ports and One USB Port"
+index_img: "/posts/td-owc-thunderbolt4-hub-teardown/image-1-300x182.webp"
 ---
 
 # OWC Thunderbolt Hub with Three Thunderbolt 4 Ports and One USB Port

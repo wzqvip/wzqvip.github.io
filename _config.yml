@@ -11,11 +11,11 @@
 # =============================================================================
 
 # Site
-title: wzqvip 的博客            # ← 请改成你想要的站点名称
-subtitle: ''
-description: ''                # ← 建议补一句站点描述，利于搜索引擎收录
-keywords:                      # ← 建议补几个关键词，如 [技术, 笔记]
-author: wzqvip                 # ← 请改成你的署名（会显示在文章页和版权处）
+title: 塔可随记
+subtitle: 记录用
+description: 塔可的随记本。在读大学生 / 嵌入式开发工程师，记 Homelab、网络、硬件拆解和日常折腾。
+keywords: [塔可, 随记, Homelab, 拆解, Teardown, 网络, PVE, 群晖, 嵌入式]
+author: 塔可taco
 language: zh-CN
 # 必须显式设置时区：GitHub Actions 运行在 UTC，
 # 若留空，Asia/Shanghai 写下的日期会被当成 UTC，导致文章时间整体偏移 8 小时。

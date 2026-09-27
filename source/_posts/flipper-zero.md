@@ -8,6 +8,7 @@ tags:
   - "FlipperZero"
   - "Hack"
 description: "这里以Momentum为例，去掉开机的“No Factory Keys Found\" 提示。 仅供个人与学习使用，请勿用于违法用途。"
+index_img: "/posts/flipper-zero/3213646264.png"
 ---
 
 这里以Momentum为例，去掉开机的“No Factory Keys Found" 提示。 仅供个人与学习使用，请勿用于违法用途。

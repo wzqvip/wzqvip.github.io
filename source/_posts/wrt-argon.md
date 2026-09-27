@@ -8,6 +8,7 @@ tags:
   - "OpenWrt"
   - "Theme"
 description: "Argon，一个全新的 OpenWrt 主题 默认主题如下： 比较简约，个人觉得还行，但是观感和效率不如Argon主题高。 Argon可以展开列并点击，这个也是最常见的第三方定制固件使用的主题。"
+index_img: "/posts/wrt-argon/779481784.png"
 ---
 
 ![2024-09-05T09:15:30.png](4041068706.png "2024-09-05T09:15:30.png")
