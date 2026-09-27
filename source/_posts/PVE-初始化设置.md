@@ -2,8 +2,8 @@
 title: "PVE 初始化设置"
 date: 2024-11-08 19:38:00
 categories:
-  - "Server"
-  - "Homelab"
+  - ["Server"]
+  - ["Homelab"]
 tags:
   - "PVE"
   - "虚拟机"

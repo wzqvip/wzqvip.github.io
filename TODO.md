@@ -174,6 +174,12 @@
 - [x] 404 页面（Fluid 内置，5 秒后跳回首页）
 - [x] **首页改为两列瀑布流**：预览图（`index_img`）+ 卡片面板 / 圆角 / 悬停浮起，
       样式在 `source/css/custom.css`，分栏逻辑在 `source/js/custom.js`
+- [x] **首页新增简介区**（参考 terminalbytes.com）：自我介绍 + 四个统计数字
+      （文章/分类/标签/拆解，由站点数据实时算出）+ 「最新随记 / 全部文章」小标题，
+      注入逻辑在 `scripts/home-intro.js`，文案在 `_config.fluid.yml` 的 `home_intro`
+- [x] **修掉分类层级问题**：Hexo 把 `categories` 列表当层级，导致 6 篇多分类文章
+      落到嵌套分类页（`/categories/Server/Homelab/`），顶层分类页找不到它们。
+      改为 `- ["Server"]` 的单元素数组写法后，各类目文章数与旧站完全一致
 - [x] **「拆解」独立板块** `/teardown/`：响应式卡片网格 + 封面图 + 导航栏入口
 - [x] 首屏横幅高度 100vh → 70vh：之前要滚一整屏才看得到文章
 - [x] 首页副标题改为随机显示 4 条（`index.slogan.text` 列表）
@@ -236,6 +242,8 @@
 | 2026-09-26 | 两张第三方外链图本地化进各自文章的资产文件夹，改写为裸文件名；README 里那节说明已删除 |
 | 2026-09-26 | 补迁安装器示例文章：Typecho「欢迎使用 Typecho」与 WordPress「世界，您好！」，均用原始时间（后者原名 hello-world 与展示页撞车，改名 wordpress-hello-world） |
 | 2026-09-26 | hello-world 展示页日期由 2024-01-15 改为 **2026-09-26 22:32**（实际建站那一刻），成为全站最新一篇 |
+| 2026-09-26 | 首页新增简介区（`scripts/home-intro.js` + `home_intro` 配置）：介绍 + 实时统计 + 小标题，填掉横幅与卡片之间的空 |
+| 2026-09-26 | 修复分类层级 bug：6 篇多分类文章的 `categories` 改为 `- ["X"]` 写法，各类目文章数现与旧站完全一致（Homelab 14 / Misc 7 / Network 6 / Server 6 / Teardown 6 / CS 3 / Charger 1）；迁移脚本同步修正 |
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 
 ---

@@ -433,7 +433,8 @@ npm run build        # 只编译，产物在 public/
 | --- | --- | --- |
 | `source/_posts/` | **文章 Markdown 和图片（日常就改这里）** | ✅ 随便改 |
 | `source/_drafts/` | 草稿，**不会发布**（本地 `npm run dev` 才能预览） | ✅ 随便改 |
-| `scripts/` | **Hexo 插件目录**（Hexo 会自动加载里面的 `.js`）：「拆解」板块页就是这里生成的 | ⚠️ 改前先读注释 |
+| `scripts/` | **Hexo 插件目录**（Hexo 会自动加载里面的 `.js`）：`teardown.js` 生成拆解板块，`home-intro.js` 往首页注入简介区 | ⚠️ 改前先读注释 |
+| `_config.fluid.yml` → `home_intro` | 首页简介区的文案（不用改代码） | ✅ 随便改 |
 | `tools/` | 一次性工具（WordPress 迁移、封面挑选），**不参与构建** | ✅ 不用管 |
 | `source/css/custom.css` | 自定义样式：首页卡片与瀑布流 + 拆解板块网格 | ✅ 随便改 |
 | `source/js/custom.js` | 首页瀑布流的分栏脚本（把卡片分进两列） | ⚠️ 改前先读注释 |
@@ -502,7 +503,16 @@ npm run build        # 只编译，产物在 public/
 - 图片与附件 URL → **裸文件名**（配合 `post_asset_folder`，见[第四节](#四-图片引用规范最重要)）
 - 旧站站内链接 → 新 permalink（全站只有 3 处）
 - 自动生成 `description`（取 `<!-- more -->` 之前的内容，作为首页摘要）
+- 分类写成**单元素数组**：`- ["Homelab"]`（⚠️ 见下）
 - 「关于我」页是纯文本 ASCII 科技树，用代码块包住以保住排版
+
+> ⚠️ **分类为什么要包一层方括号**
+> Hexo 把 front-matter 里的 `categories` 列表当成**层级**：
+> 写成 `- Server` 换行 `- Homelab`，意思不是「两个分类」，
+> 而是「Homelab 是 Server 的子分类」，文章会落到 `/categories/Server/Homelab/`，
+> `/categories/Homelab/` 里就找不到它了。而 WordPress 的分类是平级的。
+> 写成 `- ["Server"]` / `- ["Homelab"]` 才是两个并列分类。
+> （这正是本站迁移时踩过的坑：修好之后各类目文章数才和旧站完全对上。）
 
 重新运行（需先恢复备份里的原始导出）：
 
@@ -520,12 +530,33 @@ node tools/migrate-wordpress.mjs <dump.sql> <uploads目录> [--dry-run]
 
 ## 十、首页排版与「拆解」板块
 
-### 首页：瀑布流（两列独立堆叠）
+### 首页：简介区 + 瀑布流（两列独立堆叠）
 
-主题默认的首页是「单栏流水」：一行行排下来，没配图就纯文字。现在是**两列瀑布流**，
-每张卡片带预览图（有就显示，没有就不显示）、圆角边框，鼠标悬停会轻微浮起。
+进首页先是**简介区**（一段自我介绍 + 几个统计数字 + 「最新随记」小标题），
+再是**两列瀑布流**的卡片。统计数字是从站点实际数据算出来的，不是写死的
+（文章数 / 分类数 / 标签数 / 拆解篇数）。
 
-它由三部分配合而成：
+简介区的文案在 `_config.fluid.yml` 的 `home_intro` 段里改，**不用动代码**：
+
+```yaml
+home_intro:
+  enable: true          # 整块想关掉就改成 false
+  lead: "这里是塔可的随记本。……"
+  section_title: "最新随记"
+  more_text: "全部文章"
+  more_link: "/archives/"
+```
+
+> 它的 HTML 是 `scripts/home-intro.js` 在渲染完成后注入的
+> （`after_render:html` 过滤器，只在 `index.html` 上生效，分页页是
+> `page/N/index.html` 所以不会被重复注入）。这样做是因为主题是 npm 装的、
+> 不能只覆盖单个模板文件；改 `node_modules` 又会被 CI 重新安装覆盖掉。
+
+主题默认的首页是「单栏流水」：一行行排下来，没配图就纯文字。
+现在改成两列瀑布流，卡片带预览图（有就显示，没有就不显示）、圆角边框，
+鼠标悬停会轻微浮起。
+
+它由这几部分配合而成：
 
 | 部分 | 作用 | 位置 |
 | --- | --- | --- |

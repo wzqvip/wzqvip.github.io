@@ -2,8 +2,8 @@
 title: "PVE虚拟机磁盘缓存策略对比"
 date: 2024-10-04 20:39:00
 categories:
-  - "Server"
-  - "Homelab"
+  - ["Server"]
+  - ["Homelab"]
 tags:
   - "PVE"
   - "SSD"

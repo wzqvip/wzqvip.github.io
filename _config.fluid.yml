@@ -49,6 +49,17 @@ index:
       - "折腾、拆解，还有一点碎碎念"
       - "Homelab / 网络 / 硬件"
 
+# 首页简介区（由 scripts/home-intro.js 注入到瀑布流上方，作为横幅与文章之间的内容）
+# 整块想关掉就把 enable 改成 false
+home_intro:
+  enable: true
+  # 开头那段自我介绍，可以写 HTML
+  lead: "这里是塔可的随记本。在读大学生 / 嵌入式开发工程师，折腾 Homelab、网络和硬件拆解，也喜欢把东西拆开看看里面到底用了什么方案。有想法就记一笔，不一定成体系。"
+  # 「最新随记」小标题，右边那个链接指向归档页
+  section_title: "最新随记"
+  more_text: "全部文章"
+  more_link: "/archives/"
+
 # 「关于」页（页面本体在 source/about/index.md）
 about:
   # 昵称

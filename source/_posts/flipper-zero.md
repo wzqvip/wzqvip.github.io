@@ -2,8 +2,8 @@
 title: "Flipper Zero 自行编译固件"
 date: 2025-01-25 17:09:00
 categories:
-  - "Computer Science"
-  - "Misc"
+  - ["Computer Science"]
+  - ["Misc"]
 tags:
   - "FlipperZero"
   - "Hack"

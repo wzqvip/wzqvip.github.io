@@ -442,7 +442,11 @@ function buildFrontMatter({ title, date, updated, cats, tags, description, extra
   if (updated) lines.push(`updated: ${updated}`);
   if (cats.length) {
     lines.push('categories:');
-    cats.forEach((c) => lines.push(`  - ${q(c)}`));
+    // ⚠️ 每个分类包成「单元素数组」。
+    //    若写成两行 `- A` / `- B`，Hexo 会把它当成**层级**（B 是 A 的子分类），
+    //    文章会落到 /categories/A/B/，/categories/B/ 里就找不到它了。
+    //    而 WordPress 的分类是平级的，所以必须包起来。
+    cats.forEach((c) => lines.push(`  - [${q(c)}]`));
   }
   if (tags.length) {
     lines.push('tags:');

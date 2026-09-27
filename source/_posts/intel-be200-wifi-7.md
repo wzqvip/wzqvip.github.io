@@ -2,8 +2,8 @@
 title: "Intel BE200网卡连接WiFi-7."
 date: 2024-12-16 19:23:14
 categories:
-  - "Network"
-  - "Misc"
+  - ["Network"]
+  - ["Misc"]
 tags:
   - "Intel"
   - "WiFi-7"

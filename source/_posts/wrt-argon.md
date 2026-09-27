@@ -2,8 +2,8 @@
 title: "Wrt路由器安装Argon主题"
 date: 2024-09-05 17:41:00
 categories:
-  - "Network"
-  - "Homelab"
+  - ["Network"]
+  - ["Homelab"]
 tags:
   - "OpenWrt"
   - "Theme"

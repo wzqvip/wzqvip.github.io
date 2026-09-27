@@ -169,6 +169,120 @@
 }
 
 /* ==========================================================================
+   1.5 首页简介区（横幅和文章瀑布流之间）
+   --------------------------------------------------------------------------
+   HTML 由 scripts/home-intro.js 注入；文案在 _config.fluid.yml 的 home_intro 段改。
+   ========================================================================== */
+
+.home-intro {
+  margin: 0 0 2rem;
+}
+
+.home-intro-lead {
+  margin: 0 0 1.25rem;
+  color: var(--sec-text-color);
+  font-size: 1rem;
+  line-height: 1.95;
+}
+
+/* 统计数字：做成和卡片同款的小方块，视觉上成套 */
+.home-intro-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.home-intro-stats a {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.5rem 0.95rem;
+  background-color: var(--board-bg-color); /* 老浏览器兜底 */
+  background-color: color-mix(in srgb, var(--board-bg-color) 93%, var(--text-color));
+  border: 1px solid color-mix(in srgb, var(--board-bg-color) 78%, var(--text-color));
+  border-radius: 10px;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.home-intro-stats a:hover {
+  border-color: var(--link-hover-color);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.home-intro-stats strong {
+  color: var(--text-color);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.home-intro-stats span {
+  color: var(--sec-text-color);
+  font-size: 0.82rem;
+}
+
+/* 「最新随记」小标题 + 全部文章 */
+.home-intro-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--line-color);
+}
+
+.home-intro-head h2 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* 标题左侧加一小段强调色竖条 */
+.home-intro-head h2::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 0.95em;
+  margin-right: 0.5rem;
+  vertical-align: -0.08em;
+  background-color: var(--link-hover-color);
+  border-radius: 2px;
+}
+
+.home-intro-more {
+  flex: 0 0 auto;
+  color: var(--sec-text-color);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.home-intro-more:hover {
+  color: var(--link-hover-color);
+  text-decoration: none;
+}
+
+@media (max-width: 767px) {
+  .home-intro-stats {
+    gap: 0.5rem;
+  }
+
+  .home-intro-stats a {
+    padding: 0.4rem 0.7rem;
+  }
+
+  .home-intro-stats strong {
+    font-size: 1rem;
+  }
+}
+
+/* ==========================================================================
    2.「拆解」板块：/teardown/ 的卡片网格
    --------------------------------------------------------------------------
    这段 HTML 由 scripts/teardown.js 生成（见该文件顶部的注释）。

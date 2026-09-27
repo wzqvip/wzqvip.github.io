@@ -2,9 +2,9 @@
 title: "群晖NAS直连电脑配置方式"
 date: 2025-03-08 17:39:00
 categories:
-  - "Server"
-  - "Network"
-  - "Homelab"
+  - ["Server"]
+  - ["Network"]
+  - ["Homelab"]
 tags:
   - "群晖"
   - "NAS"
