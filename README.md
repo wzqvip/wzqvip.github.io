@@ -298,19 +298,83 @@ marked:
 | 分类 ID（`category-id`） | `DIC_kwDOPBveyc4DGe0K` |
 | Giscus App 安装 | ✅ 已安装并授权 |
 | 映射规则（`mapping`） | `pathname` |
+| 严格标题匹配（`strict`） | `1`（已开启） |
+| 防盗用限制 | 根目录 `giscus.json`，仅允许本站 + giscus.app + 本地预览 |
 | 配置位置 | 根目录 `_config.fluid.yml` → `giscus` 段 |
 
 ### 映射规则说明
 
 `mapping: pathname` 表示**用页面路径关联讨论帖**：
 
-- `https://wzqvip.github.io/posts/hello-world/` → 对应标题为 `/posts/hello-world/` 的讨论
-- 好处：**以后改文章标题，已有评论不会丢**
+- 页面 `https://wzqvip.github.io/posts/hello-world/`
+  → giscus 用的搜索词是 `posts/hello-world/`（去掉开头的 `/`，再切掉 `.html` 之类后缀）
+  → 它会找**标题中包含**这段文字的讨论
+- 好处：**以后改文章标题，已有评论不会丢**（因为搜的是路径，不是标题）
 - 代价：如果你改了文件名（等于改了网址），旧评论会「找不到」，等于开一个新讨论
 
 > 💡 **改文件名 = 换网址 = 评论重新开始。** 想保留评论就不要改已发布文章的 `source/_posts/` 下的文件名。
 
 其他可选值：`url`（用完整网址）、`title`（用页面标题）、`og:title`、`specific`、`number`。
+
+### giscus.app 配置页怎么填（对照表）
+
+<https://giscus.app/zh-CN> 只是**配置生成器 / 校验器**，它不会写回你的仓库。
+
+> ⚠️ **不要把页面上生成的那段 `<script>` 贴进博客。**
+> Fluid 主题已经自动生成这段代码了（可以在线上页面源码里搜 `var options =` 看到），
+> 再贴一遍会出现**两个评论框**。
+> 这个页面的正确用途只有两个：① 确认三个前置条件；② 取 `category-id`。
+
+要在页面上对照检查时，按下表选：
+
+| 页面上的选项 | 选什么 | 对应本项目的配置项 |
+| --- | --- | --- |
+| 仓库 | `wzqvip/wzqvip.github.io` | `repo` |
+| 页面 ↔️ discussion 映射关系 | 第 1 项「标题包含页面的 pathname」 | `mapping` |
+| 使用严格的标题匹配 | 勾选 | `strict` |
+| Discussion 分类 | `Announcements`（公告） | `category` / `category-id` |
+| 只搜索该分类中的 discussion | 保持勾选 | 由 `category` 体现 |
+| 启用主帖子上的反应 | 勾选 | `reactions-enabled` |
+| 输出 discussion 的元数据 | **不**勾选 | `emit-metadata` |
+| 将评论框放在评论上方 | 勾选 | `input-position` |
+| 懒加载评论 | 不勾 | 未设置 |
+| 主题 | ❌ **不要**选「用户偏好的色彩方案」 | 由 `theme-light` / `theme-dark` 接管 |
+
+> **为什么主题不能选「用户偏好的色彩方案」**：那个选项只看**操作系统**的明暗设置。
+> Fluid 有站内手动切换按钮，主题模板会读 `data-user-color-scheme` 在
+> `theme-light` / `theme-dark` 之间切换；换成 `preferred_color_scheme`
+> 会导致「站点切到暗色，评论区还是亮的」。
+
+**要改配置永远改根目录 `_config.fluid.yml` 的 `giscus:` 段**，
+提交后 Actions 自动重新部署。在 giscus.app 上点选不会影响你的博客。
+
+### 严格标题匹配（`strict: 1`）
+
+GitHub 搜索讨论用的是**模糊匹配**，标题相近时可能匹配到错误的讨论。
+开启后 giscus 改为在讨论**正文里搜索标题的 SHA-1 哈希**来精确定位。
+
+> ⚠️ 官方警告：开启前**已经存在**的讨论必须手工把哈希补进正文，否则会匹配不到。
+> 本博客在 2026-09-26 开启此项时还没有任何讨论，因此不需要做任何迁移。
+> 但**将来若迁移到新仓库、或先关掉再打开，要先检查是否已有讨论**。
+
+### 防止评论区被别的站点盗用（`giscus.json`）
+
+根目录的 `giscus.json` 用来限制**哪些域名可以加载本仓库的讨论**：
+
+```json
+{
+  "origins": ["https://wzqvip.github.io", "https://giscus.app"],
+  "originsRegex": ["http://localhost:[0-9]+", "http://127\\.0\\.0\\.1:[0-9]+"]
+}
+```
+
+- `origins`：本站域名，以及 `https://giscus.app`（官方配置页的预览要用）
+- `originsRegex`：本地预览（`npm run server` 是 `localhost:4000`）
+- 比较方式是**整个字符串完全相等**，不是包含匹配，
+  所以 `https://wzqvip.github.io.evil.com` 这种伪造域名会被正确拒绝
+- 域名对不上时，giscus 会**直接拒绝加载**
+
+> 🔴 **将来若绑定自定义域名，必须把新域名加进 `origins`**，否则评论区会加载不出来。
 
 ### 评论什么时候创建
 
@@ -369,6 +433,7 @@ npm run build        # 只编译，产物在 public/
 | `source/about/index.md` | 「关于」页面 | ✅ 可改 |
 | `_config.yml` | Hexo 站点级配置（标题、网址、图片路径规则） | ✅ 谨慎改 |
 | `_config.fluid.yml` | 主题外观 + Giscus 评论配置 | ✅ 随便改 |
+| `giscus.json` | 评论防盗用：允许加载本仓库讨论的域名白名单 | ⚠️ 换域名时必须同步改 |
 | `.github/workflows/deploy.yml` | 自动部署流水线 | ⚠️ 改动需谨慎 |
 | `scaffolds/post.md` | 新建文章的模板 | ✅ 可改 |
 | `package.json` | 依赖清单 | ⚠️ 需懂 npm |

@@ -145,6 +145,8 @@
 - [ ] 访问统计：接入 umami 或同类方案（Fluid 的 `web_analytics`）
 - [ ] 评论区新评论邮件通知（通过 GitHub Discussions 的 Watch 设置）
 - [ ] 自定义域名（如将来需要，先配置 CNAME 再改 `_config.yml` 的 `url` 与 `root`）
+      ⚠️ **同时必须把新域名加进 `giscus.json` 的 `origins`**，否则评论区会加载不出来
+- [ ] 若开启过严格标题匹配后再迁移仓库：检查已有讨论是否都带 SHA-1 哈希（见 README）
 - [ ] 依赖升级机制：定期 `npm outdated` 并升级 Hexo / Fluid 版本
 
 ---
@@ -169,6 +171,7 @@
 | 2026-09-26 | 实测确认：正文图片只写文件名的相对路径方案在线上正确解析（`/posts/hello-world/cover.png`） |
 | 2026-09-26 | 升级 workflow：`actions/checkout@v7`、`actions/setup-node@v7`，构建 Node 版本 20 → 24（Node 20 已 EOL） |
 | 2026-09-26 | 安装 Giscus App；用 giscus 校验接口 + 对照组确认授权有效，自检命令写入 README |
+| 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 
 ---
 
