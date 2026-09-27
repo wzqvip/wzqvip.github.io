@@ -9,16 +9,14 @@
 
 ---
 
-## 🚧 当前阻塞项
+## ✅ 当前无阻塞项
 
-| # | 事项 | 不做会怎样 | 操作指引 |
-| --- | --- | --- | --- |
-| 1 | **安装 Giscus App 到仓库** | 文章页底部的评论区显示配置错误（文章本身正常） | [README 第二节 步骤 3](./README.md#步骤-3待完成安装-giscus-app) |
+初始化全部完成，网站与评论系统均已线上验证可用：
 
-> 其余初始化事项（开启 Discussions、取得 `category-id`、切换 Pages 来源、工作流权限）
-> 已于 2026-09-26 全部完成并线上验收通过，操作留档见 README 第二节的折叠区。
->
-> ⚠️ 第 1 项无法用命令行代做：安装 GitHub App 必须在浏览器里完成一次授权。
+- **站点**：<https://wzqvip.github.io> —— 首页 / 文章页 / 封面图 / 关于页 / 归档页 / 搜索索引 全部返回 200
+- **评论**：Giscus 校验接口返回仓库 ID 与 6 个讨论分类，确认 App 已安装并授权
+
+剩余事项都属于「锦上添花」的个人化与功能增强，见下方各看板。
 
 ---
 
@@ -55,10 +53,14 @@
 - [x] Pages 发布来源切换为 `gh-pages` 分支（切换后不会自动重建，已手动触发一次 Pages 构建）
 - [x] 线上验收通过：首页 / 文章页 / 封面图 / 关于页 / 归档页 / 搜索索引 全部返回 200
 - [x] 核对线上 HTML：Giscus 参数（含 `category-id`）与图片相对路径均正确
+- [x] 安装 Giscus App 到仓库（浏览器手动完成一次授权）
+- [x] 验证评论系统配置：`https://giscus.app/api/discussions/categories?repo=wzqvip/wzqvip.github.io`
+      返回仓库 ID 与 6 个讨论分类；对照组 `octocat/Hello-World`、`torvalds/linux`
+      返回 `giscus is not installed on this repository`，反证本仓库安装有效
+- [x] 把这条自检命令写入 README，作为日后排查评论问题的第一手段
 
 ### 待办
 
-- [ ] **安装 Giscus App 到仓库**（唯一剩余步骤，只能在浏览器手动做一次）
 - [ ] 站点信息转正式：`_config.yml` 的 `title` / `author` / `description` / `keywords`
       （当前为占位值：`wzqvip 的博客` / `wzqvip`）
 - [ ] 「关于」页信息转正式：`_config.fluid.yml` 的 `about` 段昵称、简介、社交图标
@@ -166,6 +168,7 @@
 | 2026-09-26 | Pages 发布来源切换为 `gh-pages` 并触发构建，<https://wzqvip.github.io> 线上验收通过 |
 | 2026-09-26 | 实测确认：正文图片只写文件名的相对路径方案在线上正确解析（`/posts/hello-world/cover.png`） |
 | 2026-09-26 | 升级 workflow：`actions/checkout@v7`、`actions/setup-node@v7`，构建 Node 版本 20 → 24（Node 20 已 EOL） |
+| 2026-09-26 | 安装 Giscus App；用 giscus 校验接口 + 对照组确认授权有效，自检命令写入 README |
 
 ---
 

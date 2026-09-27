@@ -56,41 +56,21 @@
 
 ---
 
-## 二、⚠️ 一次性初始化（只需做一次）
+## 二、✅ 一次性初始化（已全部完成）
 
 | # | 步骤 | 状态 |
 | --- | --- | --- |
 | 1 | 开启仓库 Discussions | ✅ 已完成（2026-09-26） |
 | 2 | 取得并填写 `giscus.category-id` | ✅ 已完成 |
-| 3 | 安装 **Giscus App** 到本仓库 | ⬜ **待完成（唯一剩余步骤）** |
+| 3 | 安装 **Giscus App** 到本仓库 | ✅ 已完成 |
 | 4 | Pages 发布来源改为 `gh-pages` 分支 | ✅ 已完成 |
 | 5 | 确认工作流权限 | ✅ 无需操作 |
 
-> ⚠️ **步骤 3 是唯一还没做的事，而且只能在浏览器里手动点一次。**
-> 在它完成之前，文章页底部的评论区会显示配置错误（文章本身正常）。
-
-### 步骤 3（待完成）：安装 Giscus App
-
-Giscus 需要以「GitHub App」的身份在你的仓库里创建讨论帖，因此必须安装一次。
-
-1. 打开 <https://github.com/apps/giscus>
-2. 点绿色的 **Install** 按钮
-3. **Repository access** 选 **Only select repositories**，只勾选 `wzqvip.github.io`
-   （不建议选 All repositories）
-4. 点 **Install** 完成授权
-5. 回到 <https://giscus.app/zh-CN>，在「仓库」一栏填 `wzqvip/wzqvip.github.io`，
-   确认下方三项检查**全部变绿**：
-
-   - [x] 该仓库是公开的
-   - [x] Discussions 功能已开启
-   - [ ] giscus app 已安装 ← **这一步做完才会打勾**
-
-> 顺手可以在同一页面确认「Discussions 分类」显示为 `Announcements`，与 `_config.fluid.yml` 一致。
-
----
+网站和评论系统都已上线验证可用。下面记录完整操作过程，
+**只有重建仓库或迁移到新仓库时才需要重做**。
 
 <details>
-<summary>📎 以下步骤已完成，留档备查（只有重建仓库时才需要重做）</summary>
+<summary>📎 展开查看：5 个步骤的完整操作（含一条自检命令）</summary>
 
 #### ① 开启 Discussions
 
@@ -99,7 +79,18 @@ Giscus 需要以「GitHub App」的身份在你的仓库里创建讨论帖，因
 
 开启后 GitHub 会自动建好 6 个默认分类（Announcements / General / Ideas / Polls / Q&A / Show and tell）。
 
-#### ② 取得 `category-id`
+#### ② 安装 Giscus App
+
+Giscus 需要以「GitHub App」的身份在仓库里创建讨论帖，所以必须安装一次。
+⚠️ **这一步只能手动做**：安装 GitHub App 必须走浏览器授权流程，命令行无法代做。
+
+1. 打开 <https://github.com/apps/giscus>
+2. 点绿色的 **Install** 按钮
+3. **Repository access** 选 **Only select repositories**，只勾选 `wzqvip.github.io`
+   （不建议选 All repositories）
+4. 点 **Install** 完成授权
+
+#### ③ 取得 `category-id`
 
 开启 Discussions 后，用 GraphQL 查分类 ID：
 
@@ -111,7 +102,7 @@ gh api graphql -f query='{ repository(owner:"wzqvip", name:"wzqvip.github.io") {
 也可以直接开 <https://giscus.app/zh-CN> 按提示生成。
 本仓库 `Announcements` 分类的实际 ID 是 `DIC_kwDOPBveyc4DGe0K`，已写入 `_config.fluid.yml`。
 
-#### ③ 把 Pages 来源改成 `gh-pages`
+#### ④ 把 Pages 来源改成 `gh-pages`
 
 ```bash
 gh api -X PUT repos/wzqvip/wzqvip.github.io/pages \
@@ -133,7 +124,7 @@ Branch 选 **`gh-pages`** → 目录选 **`/ (root)`**。
 >
 > 或在 Actions 页面手动重跑 `pages-build-deployment`。
 
-#### ④ 工作流权限
+#### ⑤ 工作流权限
 
 `.github/workflows/deploy.yml` 里已显式声明 `permissions: contents: write`。
 本仓库的「默认工作流权限」虽然是 read-only，但**工作流内声明可以覆盖默认值**，
@@ -142,6 +133,24 @@ Branch 选 **`gh-pages`** → 目录选 **`/ (root)`**。
 把 **Workflow permissions** 改成 **Read and write permissions**。
 
 </details>
+
+### 🔍 一条命令自检 Giscus 是否配置正确
+
+之后如果评论出问题，这条命令能直接告诉你卡在哪一步，**不用打开浏览器**：
+
+```bash
+curl -s "https://giscus.app/api/discussions/categories?repo=wzqvip/wzqvip.github.io"
+```
+
+| 返回结果 | 含义 |
+| --- | --- |
+| ✅ 仓库 ID + 分类列表 | 一切正常（2026-09-26 实测返回 6 个分类） |
+| ❌ `{"error": "giscus is not installed on this repository"}` | **Giscus App 没装**，见上面第 ② 步 |
+| ❌ 其他错误 | 按错误文字判断是公开性、Discussions 还是分类 ID 的问题 |
+
+> 这条命令用的正是 giscus.app 配置页背后调用的校验接口。它必须凭
+> 「Giscus App 在该仓库的安装凭证」才能列出讨论分类，
+> 所以**能返回分类就等于「App 已正确安装并授权」**，这是最可靠的判断依据。
 
 ---
 
@@ -287,7 +296,7 @@ marked:
 | 仓库 ID（`repo-id`） | `R_kgDOPBveyQ` |
 | 讨论分类 | `Announcements` |
 | 分类 ID（`category-id`） | `DIC_kwDOPBveyc4DGe0K` |
-| Giscus App 安装 | ⬜ **待完成**，见[第二节](#二️-一次性初始化只需做一次) |
+| Giscus App 安装 | ✅ 已安装并授权 |
 | 映射规则（`mapping`） | `pathname` |
 | 配置位置 | 根目录 `_config.fluid.yml` → `giscus` 段 |
 
@@ -340,7 +349,7 @@ npm run build        # 只编译，产物在 public/
 | --- | --- |
 | 图片显示不出来 | 正文里的图片路径多写了一层文件夹名。改成 `![](cover.png)`，见[第四节](#四-图片引用规范最重要) |
 | 首页封面图 404 | `index_img` 写成了相对路径。必须写成 `/img/xxx.png` 并放到 `source/img/` |
-| 评论区显示配置错误 | 多数是 **Giscus App 还没安装**（只能手动装一次），其次是仓库没开 Discussions 或 `category-id` 不对，见[第二节](#二️-一次性初始化只需做一次) |
+| 评论区显示配置错误 | 先跑[第二节的自检命令](#-一条命令自检-giscus-是否配置正确)定位：报 App 未安装 / Discussions 未开 / 分类 ID 不对，各有对应处理方式 |
 | 推送到 `main` 后网站没变化 | ① 看 [Actions](https://github.com/wzqvip/wzqvip.github.io/actions) 是否构建失败；② 确认 Pages 来源已改成 `gh-pages` 分支 |
 | Actions 报 403 / Permission denied | 见[步骤 4](#步骤-4一般不需要确认工作流权限) |
 | 文章时间差了 8 小时 | `_config.yml` 里 `timezone` 被改掉了，必须是 `'Asia/Shanghai'` |
