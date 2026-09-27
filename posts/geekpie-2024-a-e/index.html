@@ -1,0 +1,1061 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="塔可taco">
+  <meta name="keywords" content="塔可,随记,Homelab,拆解,Teardown,网络,PVE,群晖,嵌入式">
+  
+    <meta name="description" content="已经是老成员了，所以一边看看一边写写题解。A-E题都是CTF方向的，花了点时间做了, F题目有些猜不到, G题不在知识库。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GeekPie 2024 招新题目题解 (A-E)">
+<meta property="og:url" content="https://wzqvip.github.io/posts/geekpie-2024-a-e/index.html">
+<meta property="og:site_name" content="塔可随记">
+<meta property="og:description" content="已经是老成员了，所以一边看看一边写写题解。A-E题都是CTF方向的，花了点时间做了, F题目有些猜不到, G题不在知识库。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wzqvip.github.io/posts/geekpie-2024-a-e/3469230795.png">
+<meta property="article:published_time" content="2024-11-05T16:00:00.000Z">
+<meta property="article:author" content="塔可taco">
+<meta property="article:tag" content="Homelab">
+<meta property="article:tag" content="PVE">
+<meta property="article:tag" content="Teardown">
+<meta property="article:tag" content="塔可">
+<meta property="article:tag" content="嵌入式">
+<meta property="article:tag" content="拆解">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="群晖">
+<meta property="article:tag" content="随记">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://wzqvip.github.io/posts/geekpie-2024-a-e/3469230795.png">
+  
+  
+  
+  <title>GeekPie 2024 招新题目题解 (A-E) - 塔可随记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"wzqvip.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>塔可随记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/teardown/" target="_self">
+                <i class="iconfont icon-cube-fill"></i>
+                <span>拆解</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/teardown/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-cube-fill"></i>
+                  <span>拆解</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/about/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="GeekPie 2024 招新题目题解 (A-E)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-06 00:00" pubdate>
+          2024年11月6日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          43 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">GeekPie 2024 招新题目题解 (A-E)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>已经是老成员了，所以一边看看一边写写题解。A-E题都是CTF方向的，花了点时间做了, F题目有些猜不到, G题不在知识库。</p>
+<span id="more"></span>
+
+<h2 id="A-Reveal-the-Past"><a href="#A-Reveal-the-Past" class="headerlink" title="A. Reveal the Past"></a>A. <a target="_blank" rel="noopener" href="https://hydro.ac/d/G3eKP1E_2024/p/P1001?tid=670d369c130a4aed4d83dbf7">Reveal the Past</a></h2><p>跳转到项目仓库 <a target="_blank" rel="noopener" href="https://github.com/ShanghaitechGeekPie/HelloGeekPie-2024/blob/main/README.md">https://github.com/ShanghaitechGeekPie/HelloGeekPie-2024/blob/main/README.md</a></p>
+<p>发现有四个分支，随机翻阅发现一些话与时光机相关。 Git is all what you need. 翻阅<a target="_blank" rel="noopener" href="https://github.com/ShanghaitechGeekPie/HelloGeekPie-2024/commit/be21c31d6180844d9aaae2bc14068d2fc6e0227a#diff-21e2ae0fb85fde7bb246ed90194f601e041b3c8ac6e937b1878bd8e0e796a098R1">commit历史</a>可以找到</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">flag&#123;WW91IHNob3VsZCBjaGVja291dCBodHRwczovL29oc2hpdGdpdC5jb20vemg<span class="hljs-operator">=</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="B-Say-My-Name"><a href="#B-Say-My-Name" class="headerlink" title="B. Say My Name"></a>B. <a target="_blank" rel="noopener" href="https://hydro.ac/d/G3eKP1E_2024/p/P1002?tid=670d369c130a4aed4d83dbf7">Say My Name</a></h2><p>开局两张图，一个是 BrokenCode.png， 另一个是 IsThisPhotoFromWikipedia.jpg</p>
+<p><em><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E5%B8%83%E8%8E%B1%E6%96%AF%C2%B7%E5%BE%B7%C2%B7%E7%BB%B4%E5%90%89%E5%B0%BC%E4%BA%9A" title="WikiPedia">布莱斯</a></em> · <em>德</em> · <em>维吉尼亚</em> （法语：Blaise De Vigenère，1523年8月5日—1596年），法国外交官、密码学家、炼金术士。<em>维吉尼亚</em>密码以其名字命名，但实际上并非他的发明。</p>
+<p>可以知道</p>
+<ul>
+<li><p>要补全二维码</p>
+</li>
+<li><p>要<del>炼铜</del>考虑<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/zh-cn/%E7%BB%B4%E5%90%89%E5%B0%BC%E4%BA%9A%E5%AF%86%E7%A0%81" title="维吉尼亚密码">密码学</a>&#x2F;CTF有关内容</p>
+<ul>
+<li>既然提示说了名字那就直接考虑维吉尼亚密码。</li>
+<li>文件名明示了去wiki看看</li>
+</ul>
+</li>
+</ul>
+<p><img src="/posts/geekpie-2024-a-e/3801445331.png" srcset="/img/loading.gif" lazyload alt="1729098133807.png" title="1729098133807.png" loading="lazy"></p>
+<h3 id="QR-Code"><a href="#QR-Code" class="headerlink" title="QR Code"></a>QR Code</h3><p>使用 <img src="/posts/geekpie-2024-a-e/677095672.png" srcset="/img/loading.gif" lazyload alt="1729098050311.png" title="1729098050311.png" loading="lazy"> 补全二维码
+<img src="/posts/geekpie-2024-a-e/3777544877.png" srcset="/img/loading.gif" lazyload alt="1729098045958.png" title="1729098045958.png" loading="lazy">
+可以解析到 <a target="_blank" rel="noopener" href="https://gist.github.com/AstatineAi/9716ad25738ac0783783316c3c8d5b5c">https://gist.github.com/AstatineAi/9716ad25738ac0783783316c3c8d5b5c</a></p>
+<p>拿到 <a target="_blank" rel="noopener" href="https://gist.github.com/AstatineAi/9716ad25738ac0783783316c3c8d5b5c#file-contest_key"><strong>contest_key</strong></a></p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dart">（原文此处内联了一段私钥；为避免被 <span class="hljs-title class_">GitHub</span> 推送保护拦截，本站不再内联，请点上方链接查看原文）<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://gist.github.com/AstatineAi/9716ad25738ac0783783316c3c8d5b5c#file-some-key-txt"><strong>some-key.txt</strong></a></p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">flag</span><span class="hljs-template-variable">&#123;thisisalsoakeyinaway&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="Dig-deeper"><a href="#Dig-deeper" class="headerlink" title="Dig deeper"></a>Dig deeper</h3><p>提交这个key之后得到</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dart">points <span class="hljs-number">75</span> <span class="hljs-title class_">Almost</span> <span class="hljs-title class_">There</span>. <span class="hljs-title class_">The</span> image <span class="hljs-keyword">is</span> quite strange...<br></code></pre></td></tr></table></figure>
+
+<p>维吉尼亚密码需要密文和密钥</p>
+<p>根据图片名信息我们去wiki看看<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/File:Vigenere.jpg">原图</a>。 原图是428*553, 213KB. 下载的文件尺寸一样但是有250kb.</p>
+<p>我们手动删除前面的内容（要用Hex 编辑器），然后分析文件格式，得到</p>
+<table>
+<thead>
+<tr>
+<th>100.0%</th>
+<th><a target="_blank" rel="noopener" href="https://www.aconvert.com/format/zip/">ZIP</a></th>
+<th>ZIP compressed archive</th>
+</tr>
+</thead>
+</table>
+<p>然后我们可以得到 <a target="_blank" rel="noopener" href="https://github.com/MikeMirzayanov/testlib" title="不是这个">testlib.h</a>。
+<a href="3286860937.h">testlib.h</a> 搜索flag可以找到一段人为添加的代码</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs actionscript"><span class="hljs-comment">/*</span><br><span class="hljs-comment">flag</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">Yes, this is not the original content of testlib.h.</span><br><span class="hljs-comment">The following content is really hard to understand.</span><br><span class="hljs-comment">If you can find out what the sentences in flag&#123;&#125; mean, submit the</span><br><span class="hljs-comment">final flag to Online Judge.</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">flag&#123;Zpdwv lhp wlicxcvpe ws smamjmv fzjhh sr rpr pqbjbj egzcs zx Duxgfme ajd Utabeifn zx o povqwaah Gmw xcsymabmoqee uqgh shgml jwijd bmoqeeocnqqa mnaaalw ttes wsxfwht axrxuaawf wsg tryq rpr haieaaa gn vigabe ktybuiw dgopvw ilhlepik hgdvna anahaai dogwg uc hcielu wgmo aguw eiuspdmmvf fkr pxhagvk uycbogr zcg temc pptd bwlw.&#125;</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<p>提交后拿到85分。</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima"><span class="hljs-built_in">points</span> <span class="hljs-number">85</span> So <span class="hljs-built_in">close</span>, where <span class="hljs-built_in">is</span> the <span class="hljs-built_in">key</span>?<br></code></pre></td></tr></table></figure>
+
+<p>突然想起来 <code>thisisalsoakeyinaway</code></p>
+<p>解密后得到</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">flag&#123;Given the existence <span class="hljs-keyword">as</span> uttered forth <span class="hljs-keyword">in</span> the <span class="hljs-built_in">public</span> works <span class="hljs-keyword">of</span> Puncher <span class="hljs-keyword">and</span> Wattmann <span class="hljs-keyword">of</span> a personal God quaquaquaqua <span class="hljs-keyword">with</span> white beard quaquaquaqua outside <span class="hljs-type">time</span> <span class="hljs-keyword">without</span> <span class="hljs-keyword">extension</span> who <span class="hljs-keyword">from</span> the heights <span class="hljs-keyword">of</span> divine apathia divine athambia divine aphasia loves us dearly <span class="hljs-keyword">with</span> <span class="hljs-keyword">some</span> exceptions <span class="hljs-keyword">for</span> reasons <span class="hljs-type">unknown</span> but <span class="hljs-type">time</span> will tell.&#125;&quot;<br></code></pre></td></tr></table></figure>
+
+<h2 id="C-Dim-and-Dark"><a href="#C-Dim-and-Dark" class="headerlink" title="C. Dim and Dark"></a>C. <a target="_blank" rel="noopener" href="https://hydro.ac/d/G3eKP1E_2024/p/P1003?tid=670d369c130a4aed4d83dbf7">Dim and Dark</a></h2><p><em>补充提示</em> Hex <strong>→</strong> Dec</p>
+<p>flag{ ColorIsTheKey.png }</p>
+<p>四个颜色再PS里面打开，Hex分别是</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs 1c"><span class="hljs-meta">#0a0a0a</span><br><span class="hljs-meta">#141414</span><br><span class="hljs-meta">#838383</span><br><span class="hljs-meta">#707070</span><br></code></pre></td></tr></table></figure>
+
+<p>转换成十进制</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs accesslog"><span class="hljs-number">10.20.131.112</span><br></code></pre></td></tr></table></figure>
+
+<p>校内网段刚好是10.0.0.0&#x2F;8，结合上一题没有用到的SSH可以联想到是IP地址。</p>
+<blockquote>
+<p>如果直接把1020131112作为flag提交上去会提示你 shanghaitech netinfo.</p>
+</blockquote>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">flag</span>&#123;<span class="hljs-number">10.20.131.112</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="D-Random-String-Generator"><a href="#D-Random-String-Generator" class="headerlink" title="D. Random String Generator"></a>D. <a target="_blank" rel="noopener" href="https://hydro.ac/d/G3eKP1E_2024/p/P1004?tid=670d369c130a4aed4d83dbf7">Random String Generator</a></h2><blockquote>
+<p>Use what you&#39;ve got in problem B and C.</p>
+<p>As &#39;user,&#39; pass through port No.52436, and the world of answers will open its doors to you.</p>
+</blockquote>
+<h3 id="SSH-Server"><a href="#SSH-Server" class="headerlink" title="SSH Server"></a>SSH Server</h3><p>这里直接 <code>ssh user@10.20.131.112 -p 52436 -i &quot;/path_to_key/priv_key&quot;</code></p>
+<p>连接好之后发现这是个vim窗口。 <del>这题无解，只能重装系统了</del></p>
+<p>:q 退出。 发现</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ruby">[user<span class="hljs-variable">@sombrero</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>ls<br>flag~  join  <span class="hljs-variable constant_">README</span>.md<br><br>[user<span class="hljs-variable">@sombrero</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>cat flag~<br>flag&#123;think_different&#125;<br><br><span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/hellogkpie2024.zambar.xyz/</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>join是Linux群的广告二维码</p>
+</blockquote>
+<p>提交 <code>flag{think_different}</code> 提示</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dart">points <span class="hljs-number">50</span> <span class="hljs-title class_">Congratulations</span>, you know how to use ssh! <span class="hljs-title class_">But</span> the flag <span class="hljs-keyword">is</span> somewhere <span class="hljs-keyword">else</span> <span class="hljs-keyword">on</span> the ssh server!<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs ruby">[user<span class="hljs-variable">@sombrero</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>find . -maxdepth <span class="hljs-number">2</span> -name <span class="hljs-string">&quot;.txt&quot;</span><br>./.config/flag.txt<br><br>[user<span class="hljs-variable">@sombrero</span><span class="hljs-symbol">:~</span>]<span class="hljs-variable">$ </span>cat ./.config/flag.txt<br>flag&#123;crazy_aryabhata&#125;<br><br><span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/hellogkpie2024.zambar.xyz/</span><br></code></pre></td></tr></table></figure>
+
+<p>总之就是要从合理的地方找一下，考察linux的熟练程度。</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml"></span><br><span class="language-xml">flag</span><span class="hljs-template-variable">&#123;crazy_aryabhata&#125;</span><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="Website"><a href="#Website" class="headerlink" title="Website"></a>Website</h3><p>网页进入后发现是结束页面，下意识F12看一下，发现</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="language-xml">console.log(&quot;我们不会在这个网页上面藏任何 flag :-)&quot;)</span><br><span class="language-xml"> <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>感谢您的参与<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span></span><br><span class="language-xml">                你已经到达了世界的尽头。<span class="hljs-tag">&lt;<span class="hljs-name">br</span>/&gt;</span>请按照比赛说明里面的步骤发送邮件，并静候佳音~</span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-comment">&lt;!-- flag</span></span><span class="hljs-template-variable">&#123;978-7-309-16490-9&#125;</span><span class="language-xml"><span class="hljs-comment"> --&gt;</span></span><br><span class="language-xml">            <span class="hljs-comment">&lt;!-- ModifiedIHDR.png --&gt;</span></span><br><span class="language-xml">            <span class="hljs-comment">&lt;!--</span></span><br><span class="hljs-comment"><span class="language-xml">          &lt;img</span></span><br><span class="hljs-comment"><span class="language-xml">            src=&quot;data:image/png;base64,很长很长很长很长很长的一段base64.........</span></span><br></code></pre></td></tr></table></figure>
+
+<p>得到了一个不正确的key</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">flag</span>&#123;<span class="hljs-number">978</span>-<span class="hljs-number">7</span>-<span class="hljs-number">309</span>-<span class="hljs-number">16490</span>-<span class="hljs-number">9</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>和一个看起来比较奇怪的图片。 应该是AI生成的可扫描二维码，但是缺少下半部分</p>
+<p><img src="/posts/geekpie-2024-a-e/1496830284.png" srcset="/img/loading.gif" lazyload alt="1729102980148.png" title="1729102980148.png" loading="lazy"></p>
+<p>文件名是<em><strong>ModifiedIHDR.png</strong></em> ， 谷歌搜索下可以发现是编辑了原始信息的文件。</p>
+<p>偷一下懒，直接搜个<a target="_blank" rel="noopener" href="https://entropymine.com/jason/tweakpng/">工具</a>修改</p>
+<p>导入之后提示文件末尾有垃圾信息，修改尺寸后得到</p>
+<p><img src="/posts/geekpie-2024-a-e/2306299870.png" srcset="/img/loading.gif" lazyload alt="1729109129960.png" title="1729109129960.png" loading="lazy"></p>
+<p>解码得到</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dart">flag&#123;<span class="hljs-title class_">Th15isTH3rE4lfL4g</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="E-Complete"><a href="#E-Complete" class="headerlink" title="E. Complete?"></a>E. <a target="_blank" rel="noopener" href="https://hydro.ac/d/G3eKP1E_2024/p/P1005?tid=670d369c130a4aed4d83dbf7">Complete?</a></h2><blockquote>
+<p>There was supposed to be a hint here, but the hint went nowhere.</p>
+</blockquote>
+<p>但是提示说了不会放在oj上面，所以不考虑这里。</p>
+<hr>
+<p><em><strong>题解看D题的website部分</strong></em></p>
+<hr>
+<p>把刚才的 <code>flag{978-7-309-16490-9}</code> 提交在这里可以拿到30分。</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs smali">points 30 Find out more, maybe you should<span class="hljs-built_in"> check </span>that picture?<br></code></pre></td></tr></table></figure>
+
+<p>继续把 <code>flag{Th15isTH3rE4lfL4g}</code> 提交上去可以拿到满分。</p>
+<blockquote>
+<p>结合得分可以知道这里的clue是刚才网页说的 <em>我们不会在这个网页上面藏任何 flag</em></p>
+</blockquote>
+<h2 id="F-Clues"><a href="#F-Clues" class="headerlink" title="F. Clues"></a>F. <a target="_blank" rel="noopener" href="https://hydro.ac/d/G3eKP1E_2024/p/P1006?tid=670d369c130a4aed4d83dbf7">Clues</a></h2><h3 id="1-A题中推荐的网站是什么-未解答"><a href="#1-A题中推荐的网站是什么-未解答" class="headerlink" title="1. A题中推荐的网站是什么 -- 未解答"></a>1. A题中推荐的网站是什么 -- 未解答</h3><p>继续翻一下，发现 <a target="_blank" rel="noopener" href="https://github.com/ShanghaitechGeekPie/HelloGeekPie-2024/tree/some-good-books">https://github.com/ShanghaitechGeekPie/HelloGeekPie-2024/tree/some-good-books</a></p>
+<p>这里面有两本书，查看文件名看到有Z-lib的后缀。 <code>(Z-Library).pdf</code></p>
+<blockquote>
+<p>之前漏了 <a target="_blank" rel="noopener" href="https://github.com/ShanghaitechGeekPie/HelloGeekPie-2024/commit/56c3803195e2a0289c869e151b149413789c796e#diff-53c436d8b7ce2d6b4c658adfc2c9b0ee35f775052eda373787205473955f41cdR1">something.txt</a> <code>flag{is_this_the_flag?}</code></p>
+<p>Zlib的官方网站是<a href="singlelogin.re">singlelogin.re</a></p>
+<p>Wiki: <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Z-Library">https://en.wikipedia.org/wiki/Z-Library</a>
+Reddit: <a target="_blank" rel="noopener" href="https://www.reddit.com/r/zlibrary">https://www.reddit.com/r/zlibrary</a>
+X: <a target="_blank" rel="noopener" href="https://x.com/Z_Lib_official">https://x.com/Z_Lib_official</a></p>
+</blockquote>
+<h3 id="2-谁说了-B-题中的话？（填写中文名）"><a href="#2-谁说了-B-题中的话？（填写中文名）" class="headerlink" title="2. 谁说了 B 题中的话？（填写中文名）"></a>2. 谁说了 B 题中的话？（填写中文名）</h3><blockquote>
+<p>《等待戈多》（ <em>Waiting for Godot</em> ）</p>
+<p>这是在第一幕中由Lucky这个角色在长篇的独白里所说的内容</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs">幸运儿<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-在多彩的-E-题的低处有什么？-未解答"><a href="#3-在多彩的-E-题的低处有什么？-未解答" class="headerlink" title="3. 在多彩的 E 题的低处有什么？ -- 未解答"></a>3. 在多彩的 E 题的低处有什么？ -- 未解答</h3><p>没看到。也许是说的半张二维码？</p>
+<h3 id="4-A-题-Github-repository-中，为了完成编译任务，需要补充的部分是什么？"><a href="#4-A-题-Github-repository-中，为了完成编译任务，需要补充的部分是什么？" class="headerlink" title="4. A 题 Github repository 中，为了完成编译任务，需要补充的部分是什么？"></a>4. A 题 Github repository 中，为了完成编译任务，需要补充的部分是什么？</h3><p><a target="_blank" rel="noopener" href="https://github.com/ShanghaitechGeekPie/HelloGeekPie-2024/tree/i-need-some-help">没看，好多东西</a></p>
+<p>是个Makefile</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs dns">all:<br>    echo <span class="hljs-string">&quot;There&#x27;s no target ALL&quot;</span><br><br># Rule to compile<br>$<span class="hljs-punctuation">(</span>TARGET<span class="hljs-punctuation">)</span>: $<span class="hljs-punctuation">(</span>SRC<span class="hljs-punctuation">)</span><br>    $<span class="hljs-punctuation">(</span>CC<span class="hljs-punctuation">)</span> $<span class="hljs-punctuation">(</span>CFLAGS<span class="hljs-punctuation">)</span> -o $<span class="hljs-punctuation">(</span>TARGET<span class="hljs-punctuation">)</span> $<span class="hljs-punctuation">(</span>SRC<span class="hljs-punctuation">)</span><br></code></pre></td></tr></table></figure>
+
+<p>简单修复即可, 顺便文件开头 <code>CFLAGS = -O0 -S -emit-llvm</code></p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs dns">all: $<span class="hljs-punctuation">(</span>TARGET<span class="hljs-punctuation">)</span><br><br># Rule to compile<br>$<span class="hljs-punctuation">(</span>TARGET<span class="hljs-punctuation">)</span>: $<span class="hljs-punctuation">(</span>SRC<span class="hljs-punctuation">)</span><br>    $<span class="hljs-punctuation">(</span>CC<span class="hljs-punctuation">)</span> $<span class="hljs-punctuation">(</span>CFLAGS<span class="hljs-punctuation">)</span> -o $<span class="hljs-punctuation">(</span>TARGET<span class="hljs-punctuation">)</span> $<span class="hljs-punctuation">(</span>SRC<span class="hljs-punctuation">)</span><br></code></pre></td></tr></table></figure>
+
+<p>运行后得到</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">lli </span>my_job.<span class="hljs-keyword">ll</span><br><span class="hljs-keyword"></span><span class="hljs-number">628</span><br></code></pre></td></tr></table></figure>
+
+<p>答案是</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs diff"><span class="hljs-deletion">-emit-llvm</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-你应该立即开始学习操作系统，下面哪个概念和你的-windows-系统电脑上，占用了很多硬盘空间的-pagefile-sys-文件最相关？"><a href="#5-你应该立即开始学习操作系统，下面哪个概念和你的-windows-系统电脑上，占用了很多硬盘空间的-pagefile-sys-文件最相关？" class="headerlink" title="5. 你应该立即开始学习操作系统，下面哪个概念和你的 windows 系统电脑上，占用了很多硬盘空间的 pagefile.sys 文件最相关？"></a>5. 你应该立即开始学习操作系统，下面哪个概念和你的 windows 系统电脑上，占用了很多硬盘空间的 <code>pagefile.sys</code> 文件最相关？</h3><p><del>初音未来</del></p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-built_in">E</span><span class="hljs-operator">.</span> 内存管理单元（<span class="hljs-variable">MMU</span>）进行地址转换<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-Don-t-Panic-告诉我你的答案"><a href="#6-Don-t-Panic-告诉我你的答案" class="headerlink" title="6. Don&#39;t Panic , 告诉我你的答案"></a>6. <strong>Don&#39;t Panic</strong> , 告诉我你的答案</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs">42<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>《银河系漫游指南》（ <em>The Hitchhiker&#39;s Guide to the Galaxy</em> ）</p>
+</blockquote>
+<h2 id="G-Yet-Another-Web-IDE-未解答"><a href="#G-Yet-Another-Web-IDE-未解答" class="headerlink" title="G. Yet Another Web IDE -- 未解答"></a>G. <a target="_blank" rel="noopener" href="https://hydro.ac/d/G3eKP1E_2024/p/P1007?tid=670d369c130a4aed4d83dbf7">Yet Another Web IDE</a> -- 未解答</h2><p><del>是个Python在线IDE，不会。</del></p>
+<p>发动了<strong>社工</strong>技能，网页开F12查看网络，发现了一大堆bin文件。</p>
+<p><img src="/posts/geekpie-2024-a-e/3469230795.png" srcset="/img/loading.gif" lazyload alt="1729151340934.png" title="1729151340934.png" loading="lazy"></p>
+<p>这里我们用ResourceSaver插件保存全部内容。</p>
+<p>从<code>distros/geekpy-riscv64/</code> 下面运行</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sudo</span> apt update<br><span class="hljs-attribute">sudo</span> apt install qemu qemu-system-misc<br><br><span class="hljs-attribute">qemu</span>-system-riscv64 <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -machine virt <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -m <span class="hljs-number">256</span>M <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -bios ../../bios/bbl64.bin <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -kernel ../../kernel/kernel-riscv64.bin <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -append <span class="hljs-string">&quot;console=hvc0 root=/dev/vda rw&quot;</span> <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -drive file=../../distros/geekpy-riscv64/rootfs/blk.txt,format=raw,id=hd0 <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -device virtio-blk-device,drive=hd0 <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -netdev user,id=net0 <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -device virtio-net-device,netdev=net0 <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>    -nographic<br></code></pre></td></tr></table></figure>
+
+<p>启动阶段会报错，需要一些其他操作。没做。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Computer-Science/" class="category-chain-item">Computer Science</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>GeekPie 2024 招新题目题解 (A-E)</div>
+      <div>https://wzqvip.github.io/posts/geekpie-2024-a-e/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>塔可taco</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/posts/linux-ssh/" title="Linux下通过SSH使用密钥对实现无密码登录">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux下通过SSH使用密钥对实现无密码登录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/PVE%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%A3%81%E7%9B%98%E7%BC%93%E5%AD%98%E7%AD%96%E7%95%A5%E5%AF%B9%E6%AF%94/" title="PVE虚拟机磁盘缓存策略对比">
+                        <span class="hidden-mobile">PVE虚拟机磁盘缓存策略对比</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+    <div id="giscus" class="giscus"></div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#giscus', function() {
+        var options = {"repo":"wzqvip/wzqvip.github.io","repo-id":"R_kgDOPBveyQ","category":"Announcements","category-id":"DIC_kwDOPBveyc4DGe0K","theme-light":"light","theme-dark":"dark","mapping":"pathname","reactions-enabled":1,"emit-metadata":0,"input-position":"top","lang":"zh-CN","strict":1};
+        var attributes = {};
+        for (let option in options) {
+          if (!option.startsWith('theme-')) {
+            var key = option.startsWith('data-') ? option : 'data-' + option;
+            attributes[key] = options[option];
+          }
+        }
+        var light = 'light';
+        var dark = 'dark';
+        window.GiscusThemeLight = light;
+        window.GiscusThemeDark = dark;
+        attributes['data-theme'] = document.documentElement.getAttribute('data-user-color-scheme') === 'dark' ? dark : light;
+        for (let attribute in attributes) {
+          var value = attributes[attribute];
+          if (value === undefined || value === null || value === '') {
+            delete attributes[attribute];
+          }
+        }
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://giscus.app/client.js');
+        s.setAttribute('crossorigin', 'anonymous');
+        for (let attribute in attributes) {
+          s.setAttribute(attribute, attributes[attribute]);
+        }
+        var ss = document.getElementsByTagName('script');
+        var e = ss.length > 0 ? ss[ss.length - 1] : document.head || document.documentElement;
+        e.parentNode.insertBefore(s, e.nextSibling);
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="/js/custom.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
