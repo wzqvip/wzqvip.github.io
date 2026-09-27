@@ -21,6 +21,7 @@
 6. [本地预览（可选）](#六本地预览可选)
 7. [常见问题排查](#七常见问题排查)
 8. [文件职责速查表](#八文件职责速查表)
+9. [WordPress 迁移记录](#九wordpress-迁移记录)
 
 ---
 
@@ -429,6 +430,8 @@ npm run build        # 只编译，产物在 public/
 | 路径 | 作用 | 能改吗 |
 | --- | --- | --- |
 | `source/_posts/` | **文章 Markdown 和图片（日常就改这里）** | ✅ 随便改 |
+| `source/_drafts/` | 草稿，**不会发布**（本地 `npm run dev` 才能预览） | ✅ 随便改 |
+| `scripts/` | 一次性工具（WordPress 迁移脚本），不参与构建 | ✅ 不用管 |
 | `source/img/` | 全站公共图片（首页封面、头像、横幅） | ✅ 可新增 |
 | `source/about/index.md` | 「关于」页面 | ✅ 可改 |
 | `_config.yml` | Hexo 站点级配置（标题、网址、图片路径规则） | ✅ 谨慎改 |
@@ -440,6 +443,75 @@ npm run build        # 只编译，产物在 public/
 | `themes/` | **故意留空的目录**，主题从 npm 安装 | ❌ 不用管 |
 | `public/` | 编译产物，已被 git 忽略 | ❌ 不要提交 |
 | `gh-pages` 分支 | 自动生成的线上产物 | ❌ **绝对不要手动改** |
+
+---
+
+## 九、WordPress 迁移记录
+
+历史内容已完成 **Typecho → WordPress → Hexo** 的搬迁（2026-09-26）。
+
+### 迁移了什么
+
+| 来源 | 数量 | 去向 |
+| --- | --- | --- |
+| 已发布文章 | 35 篇 | `source/_posts/<slug>.md` |
+| 「关于我」页面 | 1 个 | `source/about/index.md`（替换了原先的占位内容） |
+| 草稿 | 1 篇 | `source/_drafts/mate-xs2.md`（不会发布） |
+| 图片与附件 | 185 个，约 91 MB | 各自文章的 `source/_posts/<slug>/` |
+
+**刻意没有迁移**（都是安装器自带、无实际内容的示例）:
+
+- `hello-world`「世界，您好！」—— WordPress 默认文章（且 slug 会和本站示例文章撞车）
+- `start`「欢迎使用 Typecho」—— Typecho 默认文章
+- `sample-page`「示例页面」—— WordPress 示例页面
+- `privacy-policy` —— WordPress 自动生成的隐私政策草稿，正文还是待填模板且含内网 IP
+
+### slug（网址）规则
+
+原站有 25 篇的 slug 是 Typecho 遗留的纯数字（形如 `/posts/43/`），迁移时重新生成：
+
+1. **标题里有英文/技术词就提取出来**：`Docker安装 AdGuard Home 广告拦截` → `docker-adguard-home`
+2. **提取结果太弱（只有 1 个词、太短、或全是数字）就用中文标题**：`PVE 初始化设置` → `PVE-初始化设置`
+3. 原本就是有意义英文 slug 的 6 篇拆解文（`td-*-teardown`）原样保留
+
+> ⚠️ **文件名就是网址。** giscus 评论按 `pathname` 映射，
+> 发布后再改文件名会让已有评论「找不到」（见[第五节](#五giscus-配置备忘)）。
+
+### 两张第三方外链图没有本地化
+
+这两张不是你的文件，而是原文章直接引用厂商官网的外链图。脚本**没有**把它们下载进仓库（避免把第三方图片收进公开仓库），保持绝对 URL 不动：
+
+- `edit.wpgdadawant.com/...` —— OWC 拆解文里引用的 Intel 控制器图
+- `www.acp-tech.com/...` —— TOTU 拆解文里引用的 Thunderbolt 模块图
+
+实测两张图目前仍可正常访问。若希望站点完全自包含，
+把图片下载到对应文章的资产文件夹，再把 URL 改成裸文件名即可。
+
+### 转换规则（脚本做了什么）
+
+`scripts/migrate-wordpress.mjs` 是本次迁移用的一次性工具，主要处理：
+
+- 清理 WordPress Gutenberg 块注释（`<!-- wp:* -->`）
+- 短代码：`[caption]` 展开为图片 + 说明文字、`[collapse]` → `<details>/<summary>`、
+  `[github]` → 普通链接
+  （⚠️ `[xxx]`、`[MISSING DATASHEET]` 这类是作者正文里的**字面文字**，脚本刻意不碰）
+- `<!--more-->` → Hexo 的 `<!-- more -->`
+- 图片与附件 URL → **裸文件名**（配合 `post_asset_folder`，见[第四节](#四-图片引用规范最重要)）
+- 旧站站内链接 → 新 permalink（全站只有 3 处）
+- 自动生成 `description`（取 `<!-- more -->` 之前的内容，作为首页摘要）
+- 「关于我」页是纯文本 ASCII 科技树，用代码块包住以保住排版
+
+重新运行（需先恢复备份里的原始导出）：
+
+```bash
+node scripts/migrate-wordpress.mjs <dump.sql> <uploads目录> [--dry-run]
+```
+
+`turndown` 与 `turndown-plugin-gfm` 是 devDependencies，只在跑这个脚本时用得到，**不影响线上构建**。
+
+> 📦 原始导出文件（SQL 转储 + wp-content 压缩包）已移出仓库，存放在
+> `C:\Users\WANGZ\Documents\wordpress_migration_backup_2026-09-26\`。
+> SQL 转储里含 `wp_users` 密码哈希等敏感数据，**不要提交到任何公开仓库**。
 
 ---
 

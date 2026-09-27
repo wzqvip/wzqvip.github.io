@@ -41,6 +41,13 @@ about:
     #- { class: "iconfont icon-wechat-fill", qrcode: "/img/wechat.png" }
     #- { class: "iconfont icon-mail-fill", link: "mailto:you@example.com", tip: "邮箱" }
 
+# 友链页
+# Fluid 默认会生成一个 /links/ 页面，内容却是主题作者的示例友链，
+# 而且引用了主题并未自带的 /img/favicon.png（会 404）。导航栏也没挂这个入口，
+# 所以直接关掉。将来真要做友链页时改成 true，并配好下面的 items。
+links:
+  enable: false
+
 # 文章页
 post:
   # 首页文章卡片的默认封面图；单篇文章可用 front-matter 的 index_img 覆盖。

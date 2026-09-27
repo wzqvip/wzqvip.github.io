@@ -70,54 +70,80 @@
 
 ---
 
-## 二、[数据迁移追踪]
+## 二、[数据迁移追踪] ✅ 已完成
 
-> 背景：历史内容经历了 **Typecho → WordPress → Hexo** 两次搬迁，
-> 本次任务是把它落到当前的 Hexo 结构中并修复资源引用。
->
-> ⚠️ **迁移前请先确认上面的「阻塞项」已全部完成**，并确认线上示例文章能正常显示，
-> 否则迁移出问题时会分不清是新旧哪一环导致的。
+> 背景：历史内容经历了 **Typecho → WordPress → Hexo** 两次搬迁。
+> 已于 **2026-09-26** 完成，结论与转换规则见 [README 第九节](./README.md#九wordpress-迁移记录)。
 
-### 阶段 1：导出
+### 迁移结果
 
-- [ ] 登录 WordPress 后台 → 工具 → 导出 → 选择「所有内容」→ 下载导出 XML 文件
-- [ ] 同时备份 `wp-content/uploads/` 整个目录（图片原文件，作为抓取失败的兜底）
-- [ ] 把 XML 文件保存到项目外的临时目录（不要提交进仓库）
+- [x] 从 WordPress 取得 MySQL 转储（`blog_tacoin_site` 库）与 `wp-content` 全量压缩包
+- [x] 迁移已发布文章 **35 篇** → `source/_posts/`
+- [x] 迁移「关于我」页面 → `source/about/index.md`（纯文本 ASCII 科技树用代码块保住排版）
+- [x] 迁移草稿 1 篇 → `source/_drafts/mate-xs2.md`（不会发布）
+- [x] 图片与附件 **185 个 / 91 MB** 本地化到各文章的同名资产文件夹
+- [x] 正文引用批量改写为**裸文件名**（`![x](cover.png)`），符合 `post_asset_folder` 规则
+- [x] 旧站站内链接重映射到新 permalink（全站 3 处，已全部处理）
+- [x] 处理重名冲突（同一文章内同名文件自动加 `-2` 后缀）
+- [x] 短代码转换：`[caption]` 展开、`[collapse]` → `<details>`、`[github]` → 链接
+      （`[xxx]` / `[MISSING DATASHEET]` 是正文里的字面文字，刻意未动）
+- [x] 自动生成 `description`（取 `<!-- more -->` 之前内容作首页摘要）
+- [x] 本地构建校验：**126 个页面 / 444 处站内资源引用，失效 0**
+- [x] 输出迁移脚本 `scripts/migrate-wordpress.mjs`（可重复运行，支持 `--dry-run`）
+- [x] 原始导出文件移出仓库（SQL 转储含 `wp_users` 密码哈希，**绝不能提交**）
 
-### 阶段 2：转换为 Markdown
+### 刻意跳过的内容
 
-- [ ] 安装转换插件：`npm install hexo-migrator-wordpress --save`
-- [ ] 执行转换：`npx hexo migrate wordpress <导出文件.xml>`
-- [ ] 检查 `source/_posts/` 下生成的文章，确认 front-matter 的 `title` / `date` / `tags` / `categories`
-- [ ] 处理转换残留：WordPress 短代码（`[caption]`、`[gallery]`）、多余 `<p>` 标签、HTML 实体编码
-- [ ] 处理中文文件名与特殊字符（建议统一改成英文/拼音，避免网址出现一长串 `%E4%B8%AD`）
+安装器自带、无实际价值的示例，不迁移：
 
-### 阶段 3：历史图片本地化（重点）
+- [x] `hello-world`「世界，您好！」（WordPress 默认文章，且会与本站示例文章 slug 撞车）
+- [x] `start`「欢迎使用 Typecho」（Typecho 默认文章）
+- [x] `sample-page`「示例页面」（WordPress 示例页面）
+- [x] `privacy-policy`（WordPress 自动生成的隐私政策草稿，正文是待填模板且含内网 IP）
 
-- [ ] 统计所有文章里引用的远程图片地址（`<img src="http...">` 与 `![x](http...)`）
-- [ ] 编写并运行 Python 脚本：批量下载远程图片 → 存入该文章的**同名资产文件夹**
-- [ ] 批量改写正文引用：`![x](https://旧站/wp-content/uploads/2020/01/a.jpg)` → `![x](a.jpg)`
-      （**只写文件名**，规则见 [README 第四节](./README.md#四-图片引用规范最重要)）
-- [ ] 处理重名图片冲突（不同文章的同名文件互不影响；同一文章内重名需加后缀）
-- [ ] 处理下载失败的图片：改用 `wp-content/uploads/` 备份手动补齐
-- [ ] 校验：本地 `npm run build` 后检查 `public/posts/*/` 下图片是否齐全
-- [ ] 输出迁移报告（成功数 / 失败数 / 失败清单）
-- [ ] 全站扫描是否还有遗留的外链图片（应尽量本地化，避免旧站关停后图片全丢）
+### 待办
 
-### 阶段 4：URL 兼容与重定向
+- [ ] **决定两张第三方外链图怎么处理**：`edit.wpgdadawant.com` 与 `www.acp-tech.com` 的图
+      目前保持绝对 URL（不是你的文件，未收进公开仓库）。要么下载本地化，要么换成自己的图
+- [ ] 逐篇人工抽查排版（重点看 `[collapse]` 折叠块、规格表、代码块）
+- [ ] 核对分类（8 个）与标签（49 个）是否需要合并精简
+- [ ] 旧站评论无法自动迁移；如需保留，从旧站评论表 / Discussions 人工搬运
+- [ ] 全站无死链后，删除示例文章 `hello-world.md` 及其图片文件夹
+- [ ] 仓库瘦身（可选）：91 MB 里含一个 40 MB 群晖套件 `.zip` 与 12.7 MB `.spk`，
+      嫌重可改用 GitHub Release 托管
+- [ ] 旧站 `blog.tacoin.site` 若确定关停：确认无其他引用；如需要可为旧链接做 301 跳转
 
-- [ ] 梳理 WordPress 旧链接格式（例如 `/archives/123`、`/2020/01/hello.html`）
-- [ ] 决定策略：保留旧路径 / 生成静态跳转页 / 依赖搜索引擎重新收录
-- [ ] 为高流量旧链接生成 301 跳转（可在 `source/` 下放置带 `<meta refresh>` 的跳转页）
-- [ ] 核对新 permalink 规则 `/posts/:title/` 与旧链接的对应关系
-- [ ] 迁移完成后提交站点地图，加速搜索引擎更新
+### 旧 slug → 新 slug 对照（将来做重定向时用得上）
 
-### 阶段 5：验收
-
-- [ ] 逐篇抽查：图片显示、代码块高亮、表格、公式、目录
-- [ ] 核对分类与标签是否与旧站一致
-- [ ] 检查评论：旧站评论无法直接迁移，确认是否需要人工搬运重要评论
-- [ ] 确认无死链后，删除示例文章 `hello-world.md` 及其图片文件夹
+| 旧 slug | 新 slug |
+| --- | --- |
+| `3` | `docker-adguard-home` |
+| `4` | `openwrt-cloudflare-ddns` |
+| `11` | `https-ssl` |
+| `13` | `wrt-argon` |
+| `18` | `pyqt-gui` |
+| `23` | `网管交换机实现单线复用` |
+| `36` | `群晖需要映射哪些端口` |
+| `39` | `adguard-dns` |
+| `43` | `pve-guest-agent` |
+| `47` | `猫猫头使用Mixin创建自定义规则` |
+| `49` | `pve-web` |
+| `50` | `wes-2024` |
+| `57` | `PVE虚拟机磁盘缓存策略对比` |
+| `67` | `geekpie-2024-a-e` |
+| `83` | `linux-ssh` |
+| `84` | `PVE-初始化设置` |
+| `91` | `群晖旧版本套件存档-6.2.3` |
+| `94` | `intel-be200-wifi-7` |
+| `98` | `openwrt-wireguard` |
+| `105` | `flipper-zero` |
+| `111` | `vocechat-im` |
+| `112` | `群晖NAS直连电脑配置方式` |
+| `124` | `tobiiscreentime-tobii-software-download` |
+| `134` | `flipper-zero-avr-flasher-arduino` |
+| `136` | `cloudflare-2025` |
+| 4 个百分号编码的中文 slug | `wordpress-cloudflare-rules`、`pve-ubuntu-debian`、`dji-osmo-pocket3`、`俄亥俄-美卡小记-F1学生篇` |
+| 6 个 `td-*-teardown` | 原样保持不变 |
 
 ---
 
@@ -171,6 +197,10 @@
 | 2026-09-26 | 实测确认：正文图片只写文件名的相对路径方案在线上正确解析（`/posts/hello-world/cover.png`） |
 | 2026-09-26 | 升级 workflow：`actions/checkout@v7`、`actions/setup-node@v7`，构建 Node 版本 20 → 24（Node 20 已 EOL） |
 | 2026-09-26 | 安装 Giscus App；用 giscus 校验接口 + 对照组确认授权有效，自检命令写入 README |
+| 2026-09-26 | 完成 WordPress 迁移：35 篇文章 + 关于页 + 1 篇草稿 + 185 个资产（91 MB），站内引用校验 0 失效 |
+| 2026-09-26 | 新增 `scripts/migrate-wordpress.mjs`（MySQL 转储 → Hexo Markdown，一次性工具，支持 --dry-run） |
+| 2026-09-26 | 关闭 Fluid 默认的 `/links/` 友链页：内容是主题作者的示例友链，且引用了主题未自带的 `/img/favicon.png`（会 404） |
+| 2026-09-26 | 移除已无必要的 `source/_posts/.gitkeep`（该目录已有真实内容） |
 | 2026-09-26 | Giscus 加固：开启严格标题匹配 `strict: 1`（趁尚无讨论，零迁移成本）；新增 `giscus.json` 域名白名单防盗用 |
 
 ---
