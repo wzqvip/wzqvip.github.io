@@ -9,13 +9,16 @@
 
 ---
 
-## 🚧 当前阻塞项（做不完这三件事，线上就不正常）
+## 🚧 当前阻塞项
 
 | # | 事项 | 不做会怎样 | 操作指引 |
 | --- | --- | --- | --- |
-| 1 | 开启仓库 Discussions | Giscus 评论区报配置错误 | [README 步骤 1](./README.md#步骤-1开启-discussionsgiscus-的前置条件) |
-| 2 | 填写 `giscus.category-id` | 评论区加载失败 | [README 步骤 2](./README.md#步骤-2填写-category-id) |
-| 3 | Pages 发布来源改为 `gh-pages` | 线上显示的是未编译的源文件 | [README 步骤 3](./README.md#步骤-3把-github-pages-的来源改成-gh-pages-分支) |
+| 1 | **安装 Giscus App 到仓库** | 文章页底部的评论区显示配置错误（文章本身正常） | [README 第二节 步骤 3](./README.md#步骤-3待完成安装-giscus-app) |
+
+> 其余初始化事项（开启 Discussions、取得 `category-id`、切换 Pages 来源、工作流权限）
+> 已于 2026-09-26 全部完成并线上验收通过，操作留档见 README 第二节的折叠区。
+>
+> ⚠️ 第 1 项无法用命令行代做：安装 GitHub App 必须在浏览器里完成一次授权。
 
 ---
 
@@ -40,22 +43,28 @@
 - [x] 本地 `hexo clean && hexo generate` 构建验证通过（35 个产物，无报错）
 - [x] 从 GitHub API 取得 `repo-id` = `R_kgDOPBveyQ`
 - [x] 核实 HTTPS 已强制开启（Pages 设置 `https_enforced: true`），无需额外操作
+- [x] 开启仓库 Discussions（GitHub 已自动建好 6 个默认分类）
+- [x] 经 GraphQL 取得 `category-id` = `DIC_kwDOPBveyc4DGe0K` 并写入 `_config.fluid.yml`
+- [x] 用 `npm ci` 复现 CI 安装流程并验证通过
+      （过程中发现 lockfile 与 `package.json` 不同步会导致 `npm ci` 直接失败，已修复，
+      否则**首次部署就会挂**）
+- [x] 提交并推送到 `main` 分支
+- [x] Actions 首次构建成功（`Deploy Hexo Blog`，约 20 秒），`gh-pages` 分支自动生成
+- [x] 验证仓库 read-only 默认权限下，workflow 内的 `permissions: contents: write`
+      足以推送 `gh-pages`（**不需要**改仓库设置，文档已更正）
+- [x] Pages 发布来源切换为 `gh-pages` 分支（切换后不会自动重建，已手动触发一次 Pages 构建）
+- [x] 线上验收通过：首页 / 文章页 / 封面图 / 关于页 / 归档页 / 搜索索引 全部返回 200
+- [x] 核对线上 HTML：Giscus 参数（含 `category-id`）与图片相对路径均正确
 
 ### 待办
 
-- [ ] 开启仓库 Discussions：Settings → Features → 勾选 Discussions
-- [ ] 从 <https://giscus.app/zh-CN> 获取分类 ID，填入 `_config.fluid.yml` 的 `giscus.category-id`
-- [ ] 把 GitHub Pages 发布来源改为 `gh-pages` 分支（Branch: `gh-pages`，目录: `/ (root)`）
-- [ ] 首次提交并推送到 `main` 分支
-- [ ] 确认 Actions 构建成功（绿色 ✅）
-- [ ] 确认 `gh-pages` 分支已自动生成
-- [ ] 确认 <https://wzqvip.github.io> 正常访问
-- [ ] 确认站点信息：`_config.yml` 里的 `title` / `author` / `description` / `keywords`
+- [ ] **安装 Giscus App 到仓库**（唯一剩余步骤，只能在浏览器手动做一次）
+- [ ] 站点信息转正式：`_config.yml` 的 `title` / `author` / `description` / `keywords`
       （当前为占位值：`wzqvip 的博客` / `wzqvip`）
-- [ ] 确认「关于」页信息：`_config.fluid.yml` 的 `about` 段昵称、简介、头像、社交图标
+- [ ] 「关于」页信息转正式：`_config.fluid.yml` 的 `about` 段昵称、简介、社交图标
 - [ ] 把头像换成自己的图片（放到 `source/img/` 后改 `about.avatar`）
 - [ ] 把 `favicon` 换成自己的图标
-- [ ] （仅当 Actions 推送报 403 时）把 Workflow permissions 改为 Read and write
+- [ ] 正式文章就位后，删除示例文章 `hello-world`（现在可先当作写法范例留着）
 
 ---
 
@@ -151,6 +160,11 @@
 | 2026-09-26 | 发现本仓库默认工作流权限为 read-only，在 workflow 中显式声明 `permissions: contents: write` |
 | 2026-09-26 | 移除 `hexo-generator-search`：Fluid 主题自带搜索索引生成器，装插件会产出多余文件 |
 | 2026-09-26 | 设置 `timezone: Asia/Shanghai` 与 `updated_option: empty`，修正 CI 环境下的时间问题 |
+| 2026-09-26 | 开启仓库 Discussions，经 GraphQL 取得分类 ID `DIC_kwDOPBveyc4DGe0K` 并写入配置 |
+| 2026-09-26 | 修复 `package-lock.json` 与 `package.json` 不同步问题（会导致 CI 的 `npm ci` 失败） |
+| 2026-09-26 | 首次推送 `main`，Actions 构建成功，`gh-pages` 分支自动生成 |
+| 2026-09-26 | Pages 发布来源切换为 `gh-pages` 并触发构建，<https://wzqvip.github.io> 线上验收通过 |
+| 2026-09-26 | 实测确认：正文图片只写文件名的相对路径方案在线上正确解析（`/posts/hello-world/cover.png`） |
 
 ---
 

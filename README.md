@@ -123,6 +123,15 @@ gh api -X PUT repos/wzqvip/wzqvip.github.io/pages \
 Branch 选 **`gh-pages`** → 目录选 **`/ (root)`**。
 
 > 这一步必须在 `gh-pages` 分支已经被 Actions 创建出来之后才能做。
+>
+> 💡 实测经验：**切换来源后 GitHub 不会自动重新构建**，页面可能一直停在
+> 「building」甚至返回 404。此时手动触发一次构建即可：
+>
+> ```bash
+> gh api -X POST repos/wzqvip/wzqvip.github.io/pages/builds
+> ```
+>
+> 或在 Actions 页面手动重跑 `pages-build-deployment`。
 
 #### ④ 工作流权限
 
