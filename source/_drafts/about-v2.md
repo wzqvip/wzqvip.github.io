@@ -76,22 +76,26 @@ front-matter 已经按「关于」页写好了，定稿后直接一条命令就�
 ### 🍚 靠这个吃饭
 
 **Python**（研究、脚本、数据处理）· **C / C++**（固件、驱动、性能敏感的地方）·
-**Linux**（Ubuntu / Debian，从内核参数到 systemd 一路踩过来）·
-**PyTorch / CUDA**（训练、量化到部署）· **Docker**（什么服务都先塞进容器再说）
+**Linux**（Ubuntu / Debian / Mint，从内核参数到 systemd 一路踩过来）·
+**PyTorch / CUDA**（训练、量化到部署，早年也用过 TensorFlow）· **Docker**（什么服务都先塞进容器再说）
 
 ### 🔧 算熟
 
-- **嵌入式**：ESP32 / ESP8266 / nRF52 / STM32，Arduino 生态，I2C / SPI / UART / CAN，墨水屏与 LCD
-- **硬件**：画 PCB、焊板子（含 SMT 返修）、整机装机与超频调试、显卡拆解保养、手机换电池换屏
+- **嵌入式**：ESP32 / ESP8266 / nRF52 / Apollo3 / STM32，Arduino 生态，
+  I2C / SPI / UART / CAN，墨水屏 / LCD / OLED
+- **FPGA**：Xilinx A7 / K7 / V7 与 Zynq 7（点得亮，离精通还远）
+- **硬件**：画 PCB、焊板子（含 SMT 返修）、整机装机与 CPU / 内存超频调试、显卡拆解保养、手机换电池换屏
 - **系统与网络**：Proxmox VE 虚拟化、OpenWrt / ImmortalWrt、VLAN 与管理型交换机、
-  WireGuard 组网、群晖与 TrueNAS，以及一台常年不太安分的家庭服务器
+  WireGuard 组网、群晖 / TrueNAS / Emby，以及一台常年不太安分的家庭服务器
 - **工具链**：Git、Conda、Shell、MATLAB、LaTeX、SolidWorks / Fusion 360
 
 ### 🎲 玩过、够用
 
-- **JavaScript / TypeScript**：主要是被前端逼出来的
+- **JavaScript / TypeScript / CSS**：主要是被前端逼出来的
 - **无人机**：DJI 航拍与 FPV，也自己搭过多旋翼
-- **Flipper Zero**：自己编译固件，接 CC1101 Sub-GHz、NRF24、ESP32 Marauder，还画过扩展板
+- **Flipper Zero**：自己编译固件，接 CC1101 Sub-GHz、NRF24、ESP32 Marauder、MagSpoof，
+  还画过扩展板；NFC 也折腾过一阵
+- **Lego 机器人**：NXT 和 EV3，最早接触编程大概就是从这两个开始
 - **安全**：拆过自己的智能门铃摄像头做逆向，也给国产 NAS 系统 FnOS 找过一个提权问题并写了完整分析
   （边界我很清楚：**只拆自己的、只研究自己的**）
 - **3D 打印**：装配、调平、堵头、修
