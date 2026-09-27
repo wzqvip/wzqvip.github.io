@@ -13,6 +13,17 @@ front-matter 已经按「关于」页写好了，定稿后直接一条命令就�
 
     git mv source/_drafts/about-v2.md source/about/index.md
 
+⚠️ 如果打算在 Pages CMS 后台里编辑这份草稿：后台的「草稿」栏目只列了
+标题/时间/分类/标签/正文，不显示 layout 和 comments，保存后这两个字段
+有可能被抹掉。保险起见，定稿时确认文件开头就是这几行：
+
+    ---
+    title: "关于我"
+    layout: about
+    comments: false
+    date: 2026-09-28 00:29:00
+    ---
+
 另外 _config.fluid.yml 里的 about.intro 现在是「在读大学生 / 嵌入式开发工程师」，
 和实际情况（已经读博了）对不上，建议一起改，文末我写了两条备选。
 
