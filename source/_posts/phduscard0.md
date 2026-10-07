@@ -3,11 +3,15 @@ title: PHD玩卡小记-0
 date: 2026-10-06 23:15:00
 updated: 2026-10-06 23:15:00
 categories: Misc
+tags:
+  - "CARD"
+  - "PHD"
 description: 拿到SSN了。接下来就要涉足更多卡片了。
 ---
-# 标题： PHD玩卡小记
 
-继 俄亥俄-美卡小记-F1学生篇 之后的正文。  致谢 [【新手必读】美国信用卡新手入门攻略【2023年更新】](https://www.uscreditcardguide.com/a-guide-for-beginners/)
+继俄亥俄-美卡小记-F1学生篇 之后的正文。  致谢 [【新手必读】美国信用卡新手入门攻略【2023年更新】](https://www.uscreditcardguide.com/a-guide-for-beginners/)
+
+# 标题： PHD玩卡小记
 
 进度：
 
