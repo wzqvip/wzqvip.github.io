@@ -9,9 +9,9 @@ tags:
 description: 拿到SSN了。接下来就要涉足更多卡片了。
 ---
 
-继俄亥俄-美卡小记-F1学生篇 之后的正文。  致谢 [【新手必读】美国信用卡新手入门攻略【2023年更新】](https://www.uscreditcardguide.com/a-guide-for-beginners/)
-
 # 标题： PHD玩卡小记
+
+继俄亥俄-美卡小记-F1学生篇 之后的正文。  致谢 [【新手必读】美国信用卡新手入门攻略【2023年更新】](https://www.uscreditcardguide.com/a-guide-for-beginners/)
 
 进度：
 
