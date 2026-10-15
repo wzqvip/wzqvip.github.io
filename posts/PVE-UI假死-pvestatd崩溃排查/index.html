@@ -1,0 +1,1063 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="塔可taco">
+  <meta name="keywords" content="塔可,随记,Homelab,拆解,Teardown,网络,PVE,群晖,嵌入式">
+  
+    <meta name="description" content="PVE 网页 UI 假死、SSH 里 qm list 卡住不返回，但虚拟机照常运行，重启就好、过段时间又犯——这个困扰我几个月的毛病，根因是 pvestatd 崩溃后 systemd 从不把它拉起来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PVE 网页打不开、SSH 里 qm list 卡住：元凶是 pvestatd 崩溃后永不自愈">
+<meta property="og:url" content="https://wzqvip.github.io/posts/PVE-UI%E5%81%87%E6%AD%BB-pvestatd%E5%B4%A9%E6%BA%83%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:site_name" content="塔可随记">
+<meta property="og:description" content="PVE 网页 UI 假死、SSH 里 qm list 卡住不返回，但虚拟机照常运行，重启就好、过段时间又犯——这个困扰我几个月的毛病，根因是 pvestatd 崩溃后 systemd 从不把它拉起来。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-15T18:00:00.000Z">
+<meta property="article:author" content="塔可taco">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="PVE">
+<meta property="article:tag" content="Proxmox">
+<meta property="article:tag" content="systemd">
+<meta property="article:tag" content="排障">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>PVE 网页打不开、SSH 里 qm list 卡住：元凶是 pvestatd 崩溃后永不自愈 - 塔可随记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"wzqvip.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>塔可随记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/teardown/" target="_self">
+                <i class="iconfont icon-cube-fill"></i>
+                <span>拆解</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/teardown/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-cube-fill"></i>
+                  <span>拆解</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/about/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="PVE 网页打不开、SSH 里 qm list 卡住：元凶是 pvestatd 崩溃后永不自愈"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-10-16 02:00" pubdate>
+          2026年10月16日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          60 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">PVE 网页打不开、SSH 里 qm list 卡住：元凶是 pvestatd 崩溃后永不自愈</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>我的 PVE 有个持续了几个月的怪毛病：</p>
+<ul>
+<li>网页 UI 转圈或直接打不开</li>
+<li>SSH 上去敲 <code>qm list</code>，<strong>卡住不返回</strong>，要等很久或干脆不出来</li>
+<li><strong>但里面的虚拟机一切正常，业务没断</strong></li>
+<li>重启物理机后恢复，过一段时间又犯</li>
+<li>旧版本有，升级之后依然有</li>
+</ul>
+<p>这篇把排查过程完整记下来。</p>
+<span id="more"></span>
+
+<h2 id="一、先纠正一个思维定式"><a href="#一、先纠正一个思维定式" class="headerlink" title="一、先纠正一个思维定式"></a>一、先纠正一个思维定式</h2><p>&quot;虚拟机都好好的，只有管理界面挂了&quot;——这个特征特别容易让人往 UI 层猜：<code>pveproxy</code>（网页服务）有问题？浏览器缓存？证书？集群文件系统 <code>pmxcfs</code> 卡了？</p>
+<p>我最初就是这么想的，绕了不少弯路。</p>
+<p>正确的第一步其实很朴素：<strong>先看守护进程死没死，而不是先看应用日志。</strong></p>
+<h2 id="二、一行命令看到真相"><a href="#二、一行命令看到真相" class="headerlink" title="二、一行命令看到真相"></a>二、一行命令看到真相</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl status pvestatd<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dart">× pvestatd.service - PVE <span class="hljs-title class_">Status</span> <span class="hljs-title class_">Daemon</span><br>     <span class="hljs-title class_">Loaded</span>: loaded (/lib/systemd/system/pvestatd.service; enabled; preset: enabled)<br>     <span class="hljs-title class_">Active</span>: failed (<span class="hljs-title class_">Result</span>: signal) since <span class="hljs-title class_">Thu</span> <span class="hljs-number">2026</span>-<span class="hljs-number">10</span>-<span class="hljs-number">15</span> <span class="hljs-number">18</span>:<span class="hljs-number">44</span>:<span class="hljs-number">28</span> CST; 6h ago<br>     <span class="hljs-title class_">Main</span> PID: <span class="hljs-number">1811</span> (code=killed, signal=SEGV)<br></code></pre></td></tr></table></figure>
+
+<p>再翻历史：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Sep</span> <span class="hljs-number">29</span> <span class="hljs-number">20</span>:<span class="hljs-number">21</span>:<span class="hljs-number">06</span> pve systemd[<span class="hljs-number">1</span>]: pvestatd.service: Main process exited, code=killed, status=<span class="hljs-number">11</span>/SEGV<br><span class="hljs-attribute">Sep</span> <span class="hljs-number">29</span> <span class="hljs-number">20</span>:<span class="hljs-number">21</span>:<span class="hljs-number">06</span> pve systemd[<span class="hljs-number">1</span>]: pvestatd.service: Failed with result &#x27;signal&#x27;.<br><span class="hljs-attribute">Oct</span> <span class="hljs-number">11</span> <span class="hljs-number">17</span>:<span class="hljs-number">48</span>:<span class="hljs-number">27</span> pve systemd[<span class="hljs-number">1</span>]: pvestatd.service: Main process exited, code=killed, status=<span class="hljs-number">11</span>/SEGV<br><span class="hljs-attribute">Oct</span> <span class="hljs-number">15</span> <span class="hljs-number">18</span>:<span class="hljs-number">44</span>:<span class="hljs-number">28</span> pve systemd[<span class="hljs-number">1</span>]: pvestatd.service: Main process exited, code=killed, status=<span class="hljs-number">11</span>/SEGV<br></code></pre></td></tr></table></figure>
+
+<p><strong><code>pvestatd</code> 是 PVE 的状态守护进程。</strong> 它周期性采集节点、虚拟机、存储的状态，然后广播给 <code>pveproxy</code>——网页上看到的 CPU&#x2F;内存&#x2F;磁盘曲线、虚拟机运行状态，全都来自它。</p>
+<p>再看这一行，问题就闭环了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl show pvestatd -p Restart<br><span class="hljs-comment"># Restart=no</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>上游给 <code>pvestatd</code> 配的是 <code>Restart=no</code>。</strong></p>
+<p>所以它一旦段错误（SEGV）崩掉，systemd 不会重新拉起它，它就永久躺平——直到你手动干预。</p>
+<h2 id="三、所有现象一次性对上"><a href="#三、所有现象一次性对上" class="headerlink" title="三、所有现象一次性对上"></a>三、所有现象一次性对上</h2><table>
+<thead>
+<tr>
+<th>现象</th>
+<th>机制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>网页 UI 假死</td>
+<td>状态数据源没了，<code>pveproxy</code> 拿不到节点&#x2F;虚拟机状态</td>
+</tr>
+<tr>
+<td><strong><code>qm list</code> 卡住不返回</strong></td>
+<td>同一套状态路径失效</td>
+</tr>
+<tr>
+<td><strong>虚拟机照常运行</strong></td>
+<td>死的是监控守护进程，不是 QEMU</td>
+</tr>
+<tr>
+<td>重启物理机就好</td>
+<td>重启把它重新拉起来了</td>
+</tr>
+<tr>
+<td>过段时间又犯</td>
+<td>它又会崩，且从不自愈</td>
+</tr>
+<tr>
+<td>升级后依然有</td>
+<td>上游至今仍给它配 <code>Restart=no</code></td>
+</tr>
+<tr>
+<td>表现像&quot;随机&quot;</td>
+<td>崩溃时间不可预测，看起来毫无规律</td>
+</tr>
+</tbody></table>
+<h3 id="立刻可用的急救办法"><a href="#立刻可用的急救办法" class="headerlink" title="立刻可用的急救办法"></a>立刻可用的急救办法</h3><p>这是整篇最值钱的一句话：</p>
+<blockquote>
+<p><strong>下次 UI 卡死、<code>qm list</code> 卡住时，你不需要重启物理机。</strong></p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl restart pvestatd<br></code></pre></td></tr></table></figure>
+
+<p>网页和 <code>qm</code> 立刻恢复，<strong>正在跑的虚拟机毫发无伤</strong>。</p>
+<p>我几个月来一直在用&quot;重启整机&quot;这种核弹级手段，去处理一个 <code>systemctl restart</code> 就能解决的问题。如果你也在这么干，这篇就没白写。</p>
+<h2 id="四、为什么它看起来完全随机"><a href="#四、为什么它看起来完全随机" class="headerlink" title="四、为什么它看起来完全随机"></a>四、为什么它看起来完全随机</h2><p>因为崩溃本身确实不可预测。历史上出现的时刻：<code>Sep 04</code>、<code>Sep 10</code>、<code>Sep 29</code>、<code>Oct 11</code>、<code>Oct 15</code>——间隔从几天到两周不等，跨了多次升级和重启。</p>
+<p>但<strong>崩溃发生之后的行为是完全确定的</strong>：<code>Restart=no</code> → 永久失效 → 界面假死。所以定位的关键不是预测它什么时候崩，而是识别&quot;崩了之后没人管&quot;这个结构性问题。</p>
+<p>顺手记一个排查技巧：<strong>时间线是成本最低的因果检验工具。</strong></p>
+<p>日志里还有一个更容易误导人的东西：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">journalctl -g <span class="hljs-string">&#x27;status update time&#x27;</span> | <span class="hljs-built_in">wc</span> -l<br><span class="hljs-comment"># 1202</span><br>journalctl -g <span class="hljs-string">&#x27;status update time&#x27;</span> | <span class="hljs-built_in">head</span> -3<br><span class="hljs-comment"># May 11 04:40  pvestatd[1116]: status update time (39.153 seconds)</span><br></code></pre></td></tr></table></figure>
+
+<p>一千多条&quot;状态更新耗时 36~40 秒&quot;的警告，看起来像是元凶。但它从 5 月就开始了，而 <code>pvestatd</code> 崩溃重启贯穿 5–7 月，两者是<strong>同时存在</strong>而非先后因果。真正能解释&quot;为什么卡住之后要等到重启才恢复&quot;的，是 <code>Restart=no</code>。</p>
+<p>（这些 36 秒的慢循环我还没查清，见第五节。）</p>
+<h2 id="五、修复一：让-pvestatd-自己站起来"><a href="#五、修复一：让-pvestatd-自己站起来" class="headerlink" title="五、修复一：让 pvestatd 自己站起来"></a>五、修复一：让 pvestatd 自己站起来</h2><p><strong>不要改 <code>/lib/systemd/system/pvestatd.service</code></strong>，包升级会覆盖。用 drop-in：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> -p /etc/systemd/system/pvestatd.service.d<br><span class="hljs-built_in">cat</span> &gt; /etc/systemd/system/pvestatd.service.d/10-restart-on-failure.conf &lt;&lt;<span class="hljs-string">&#x27;EOF&#x27;</span><br>[Unit]<br>StartLimitIntervalSec=0<br><br>[Service]<br>Restart=on-failure<br>RestartSec=5<br>EOF<br>systemctl daemon-reload<br></code></pre></td></tr></table></figure>
+
+<h3 id="这里有个把我坑过一次的细节"><a href="#这里有个把我坑过一次的细节" class="headerlink" title="这里有个把我坑过一次的细节"></a>这里有个把我坑过一次的细节</h3><p>我第一版把 <code>StartLimitIntervalSec=0</code> 写进了 <code>[Service]</code> 段。journald 悄悄记了一句：</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dart"><span class="hljs-title class_">Unknown</span> key <span class="hljs-string">&#x27;StartLimitIntervalSec&#x27;</span> <span class="hljs-keyword">in</span> section [<span class="hljs-title class_">Service</span>], ignoring.<br></code></pre></td></tr></table></figure>
+
+<p><strong><code>StartLimitIntervalSec</code> 属于 <code>[Unit]</code> 段，不是 <code>[Service]</code> 段。</strong> 写错会被<strong>静默忽略</strong>——配置文件看起来好好的，实际根本没生效。</p>
+<p>验证方法（一定要看 <code>StartLimitIntervalUSec</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl show pvestatd -p Restart -p RestartUSec -p StartLimitIntervalUSec<br><span class="hljs-comment"># Restart=on-failure</span><br><span class="hljs-comment"># RestartUSec=5s</span><br><span class="hljs-comment"># StartLimitIntervalUSec=0      ← 0 才说明频率限制真的解除</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="同类服务一起加固"><a href="#同类服务一起加固" class="headerlink" title="同类服务一起加固"></a>同类服务一起加固</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-keyword">for</span> svc <span class="hljs-keyword">in</span> pvescheduler spiceproxy; <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">mkdir</span> -p /etc/systemd/system/<span class="hljs-variable">$svc</span>.service.d<br>  <span class="hljs-built_in">cat</span> &gt; /etc/systemd/system/<span class="hljs-variable">$svc</span>.service.d/10-restart-on-failure.conf &lt;&lt;<span class="hljs-string">&#x27;EOF&#x27;</span><br>[Unit]<br>StartLimitIntervalSec=0<br><br>[Service]<br>Restart=on-failure<br>RestartSec=5<br>EOF<br><span class="hljs-keyword">done</span><br>systemctl daemon-reload<br><br><span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> pvestatd pvescheduler spiceproxy pveproxy pvedaemon pve-cluster; <span class="hljs-keyword">do</span><br>  <span class="hljs-built_in">printf</span> <span class="hljs-string">&quot;%-14s Restart=%-12s Active=%s\n&quot;</span> \<br>    <span class="hljs-string">&quot;<span class="hljs-variable">$s</span>&quot;</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(systemctl show $s -p Restart --value)</span>&quot;</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(systemctl is-active $s)</span>&quot;</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>顺带一个发现：<code>pveproxy</code>、<code>pvedaemon</code>、<code>pve-cluster</code> <strong>本来就有</strong> <code>Restart=on-failure</code>，唯独最该有自愈能力的 <code>pvestatd</code> 没有。</p>
+</blockquote>
+<h2 id="六、修复二：看门狗兜底-记录现场"><a href="#六、修复二：看门狗兜底-记录现场" class="headerlink" title="六、修复二：看门狗兜底 + 记录现场"></a>六、修复二：看门狗兜底 + 记录现场</h2><p><code>Restart=on-failure</code> 覆盖&quot;运行中崩溃&quot;。但如果它在启动早期就崩、单元被留在 <code>failed</code> 状态，还是需要外部兜底。</p>
+<p><code>/usr/local/bin/pvestatd-watchdog.sh</code>（<code>chmod 0755</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-comment"># pvestatd 挂了就拉起来，并把现场记录下来</span><br><span class="hljs-built_in">set</span> -u<br>LOG=/var/log/pvestatd-watchdog.log<br><br><span class="hljs-keyword">if</span> ! systemctl is-active --quiet pvestatd; <span class="hljs-keyword">then</span><br>  &#123;<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(date -Is)</span> pvestatd NOT active (state=<span class="hljs-subst">$(systemctl is-failed pvestatd)</span>) -&gt; restarting&quot;</span><br>    dmesg | grep -i <span class="hljs-string">&#x27;pvestatd.*segfault&#x27;</span> | <span class="hljs-built_in">tail</span> -3<br>    journalctl -u pvestatd -n 20 --no-pager<br>  &#125; &gt;&gt; <span class="hljs-string">&quot;<span class="hljs-variable">$LOG</span>&quot;</span><br>  systemctl restart pvestatd &gt;&gt; <span class="hljs-string">&quot;<span class="hljs-variable">$LOG</span>&quot;</span> 2&gt;&amp;1<br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(date -Is)</span> restart issued -&gt; now <span class="hljs-subst">$(systemctl is-active pvestatd)</span>&quot;</span> &gt;&gt; <span class="hljs-string">&quot;<span class="hljs-variable">$LOG</span>&quot;</span><br><span class="hljs-keyword">fi</span><br><br><span class="hljs-comment"># /etc/pve 卡住 = qm 卡住的典型信号</span><br><span class="hljs-keyword">if</span> ! <span class="hljs-built_in">timeout</span> 10 <span class="hljs-built_in">ls</span> /etc/pve/qemu-server/ &gt;/dev/null 2&gt;&amp;1; <span class="hljs-keyword">then</span><br>  <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(date -Is)</span> pmxcfs /etc/pve unresponsive (&gt;=10s)&quot;</span> &gt;&gt; <span class="hljs-string">&quot;<span class="hljs-variable">$LOG</span>&quot;</span><br><span class="hljs-keyword">fi</span><br></code></pre></td></tr></table></figure>
+
+<p>配套 timer：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-comment"># /etc/systemd/system/pvestatd-watchdog.timer</span><br><span class="hljs-section">[Unit]</span><br><span class="hljs-attr">Description</span>=Run pvestatd watchdog every <span class="hljs-number">2</span> minutes<br><br><span class="hljs-section">[Timer]</span><br><span class="hljs-attr">OnBootSec</span>=<span class="hljs-number">2</span>min<br><span class="hljs-attr">OnUnitActiveSec</span>=<span class="hljs-number">2</span>min<br><span class="hljs-attr">AccuracySec</span>=<span class="hljs-number">10</span>s<br><br><span class="hljs-section">[Install]</span><br><span class="hljs-attr">WantedBy</span>=timers.target<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl daemon-reload<br>systemctl <span class="hljs-built_in">enable</span> --now pvestatd-watchdog.timer<br>systemctl list-timers pvestatd-watchdog.timer<br></code></pre></td></tr></table></figure>
+
+<h2 id="七、修复三：抓-core-dump（根因还没定位时最重要）"><a href="#七、修复三：抓-core-dump（根因还没定位时最重要）" class="headerlink" title="七、修复三：抓 core dump（根因还没定位时最重要）"></a>七、修复三：抓 core dump（根因还没定位时最重要）</h2><p>到这一步，UI 不会再假死了。但**&quot;为什么会 SEGV&quot;我还没查清**——所以必须让它下次崩溃时留下证据。</p>
+<p>这台机器没装 <code>systemd-coredump</code>，而 <code>/proc/sys/kernel/core_pattern</code> 是裸的 <code>core</code>：会写到崩溃进程的当前工作目录（<code>pvestatd</code> 是 <code>/</code>），基本等于丢掉。</p>
+<p>用一个最小 handler 接管：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># /usr/local/bin/core-dump-handler.sh   (chmod 0755)</span><br><span class="hljs-comment">#!/bin/bash</span><br><span class="hljs-built_in">set</span> -u<br>CRASHDIR=/var/crash<br>PROG=<span class="hljs-string">&quot;<span class="hljs-variable">$4</span>&quot;</span><br>CORE=<span class="hljs-string">&quot;<span class="hljs-variable">$CRASHDIR</span>/core.<span class="hljs-variable">$PROG</span>.<span class="hljs-variable">$1</span>&quot;</span><br><span class="hljs-built_in">mkdir</span> -p <span class="hljs-string">&quot;<span class="hljs-variable">$CRASHDIR</span>&quot;</span><br><span class="hljs-built_in">cat</span> &gt; <span class="hljs-string">&quot;<span class="hljs-variable">$CORE</span>&quot;</span>                      <span class="hljs-comment"># core 从 stdin 进来</span><br><span class="hljs-built_in">chmod</span> 0640 <span class="hljs-string">&quot;<span class="hljs-variable">$CORE</span>&quot;</span><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;time=<span class="hljs-subst">$(date -Is)</span> pid=<span class="hljs-variable">$1</span> signal=<span class="hljs-variable">$2</span> exe=<span class="hljs-variable">$4</span>&quot;</span> &gt; <span class="hljs-string">&quot;<span class="hljs-variable">$CORE</span>.info&quot;</span><br><span class="hljs-built_in">ls</span> -1t <span class="hljs-string">&quot;<span class="hljs-variable">$CRASHDIR</span>&quot;</span>/core.* 2&gt;/dev/null | <span class="hljs-built_in">tail</span> -n +11 | xargs -r <span class="hljs-built_in">rm</span> -f<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># /etc/sysctl.d/90-core-dump.conf</span><br>kernel.core_pattern=|/usr/local/bin/core-dump-handler.sh %p %s %c %e<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">sysctl --system<br><span class="hljs-built_in">cat</span> /proc/sys/kernel/core_pattern<br><span class="hljs-comment"># |/usr/local/bin/core-dump-handler.sh %p %s %c %e</span><br><br><span class="hljs-comment"># 确保 pvestatd 允许 dump</span><br><span class="hljs-built_in">mkdir</span> -p /etc/systemd/system/pvestatd.service.d<br><span class="hljs-built_in">cat</span> &gt; /etc/systemd/system/pvestatd.service.d/20-core-dump.conf &lt;&lt;<span class="hljs-string">&#x27;EOF&#x27;</span><br>[Service]<br>LimitCORE=infinity<br>EOF<br>systemctl daemon-reload<br></code></pre></td></tr></table></figure>
+
+<p>下次崩溃后：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">apt-get install -y gdb<br><span class="hljs-built_in">ls</span> -l /var/crash/<br>gdb /usr/bin/perl /var/crash/core.pvestatd.&lt;pid&gt; -batch -ex <span class="hljs-string">&#x27;bt full&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="八、还剩什么没查清"><a href="#八、还剩什么没查清" class="headerlink" title="八、还剩什么没查清"></a>八、还剩什么没查清</h2><p>我不想把这篇写成&quot;全部搞定&quot;的爽文。</p>
+<p><strong><code>pvestatd</code> 为什么会 SEGV，我还没定位到。</strong> 已知线索：</p>
+<ul>
+<li>崩溃地址类似 <code>ffffffff0001120d</code>、<code>error 5</code>，<code>ip</code> 每次落在 perl 二进制不同偏移 → 更像<strong>堆损坏</strong>，而非固定路径的确定性 bug</li>
+<li>崩溃前 CPU 时间偏高（有一次累计 52 分钟）</li>
+<li>那 1202 次 <code>status update time</code> 警告节律相当规律（约 36s + 8s ≈ 44s 周期），像某个固定阻塞操作</li>
+<li>我用 <code>strace</code> 跟了 55 秒，<strong>当下循环是毫秒级的</strong> → 卡顿是间歇性的，必须在卡住的那一刻抓现场</li>
+</ul>
+<p><code>pvestatd</code> 的状态循环里确实存在&quot;可以很慢&quot;的调用：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs perl">update_qemu_status(...)   <span class="hljs-comment"># → QemuServer::vmstatus(undef, 1)</span><br></code></pre></td></tr></table></figure>
+
+<p>源码注释写得很直白：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-comment"># This must be fast and should not block ($full == false)</span><br><span class="hljs-comment"># We only query KVM using QMP if $full == true (this can be slow)</span><br></code></pre></td></tr></table></figure>
+
+<p>而 <code>pvestatd</code> 恰恰传了 <code>$full = 1</code>，会为每台运行中的虚拟机走 QMP 查询。QMP 命令默认超时 5 秒，但部分命令高达 60 秒甚至 1 小时。</p>
+<p>所以下一步是<strong>在卡顿发生的那一刻抓现场</strong>，而不是继续猜。配合已经装好的 core dump handler，下次崩溃应该能拿到真正的 <code>bt full</code>。</p>
+<h2 id="九、排查清单（可直接抄）"><a href="#九、排查清单（可直接抄）" class="headerlink" title="九、排查清单（可直接抄）"></a>九、排查清单（可直接抄）</h2><p>遇到&quot;UI 假死 &#x2F; <code>qm list</code> 卡住但虚拟机正常&quot;，按这个顺序查：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 1. 守护进程死了没？——最常见，也最容易被忽略</span><br>systemctl status pvestatd pveproxy pvedaemon<br>systemctl is-active pvestatd<br>journalctl -u pvestatd -n 50<br><br><span class="hljs-comment"># 2. 有没有 SEGV / 被 OOM 杀</span><br>dmesg | grep -iE <span class="hljs-string">&#x27;segfault|oom|killed process&#x27;</span><br>journalctl -g <span class="hljs-string">&#x27;SEGV&#x27;</span><br><br><span class="hljs-comment"># 3. 是不是卡在内核 I/O（D 状态，kill -9 无效）</span><br>ps -eo pid,<span class="hljs-built_in">stat</span>,wchan:25,cmd | awk <span class="hljs-string">&#x27;$2 ~ /D/&#x27;</span><br>grep procs_blocked /proc/stat<br><span class="hljs-built_in">uptime</span>                      <span class="hljs-comment"># 看 wa（iowait）占比</span><br><br><span class="hljs-comment"># 4. 集群文件系统是否卡住（qm 卡住的典型信号）</span><br><span class="hljs-keyword">time</span> <span class="hljs-built_in">timeout</span> 10 <span class="hljs-built_in">ls</span> /etc/pve/qemu-server/<br><span class="hljs-keyword">time</span> <span class="hljs-built_in">timeout</span> 15 qm list<br><br><span class="hljs-comment"># 5. 状态循环到底慢在哪</span><br>journalctl -u pvestatd -g <span class="hljs-string">&#x27;status update time&#x27;</span> | <span class="hljs-built_in">tail</span> -20<br><br><span class="hljs-comment"># 6. 急救（不用重启物理机）</span><br>systemctl restart pvestatd<br></code></pre></td></tr></table></figure>
+
+<h2 id="十、几条结论"><a href="#十、几条结论" class="headerlink" title="十、几条结论"></a>十、几条结论</h2><ol>
+<li><strong>&quot;UI 假死&quot;不等于&quot;UI 的问题&quot;。</strong> 先看守护进程状态，再看应用日志。一行 <code>systemctl status</code> 就能省下几个月的重启。</li>
+<li><strong><code>pvestatd</code> 在 PVE 8.4.21 上仍是 <code>Restart=no</code>。</strong> 崩溃即永久失效，且表现为&quot;只有管理界面挂了、业务照跑&quot;，极具迷惑性。建议所有 PVE 用户都加上自愈 drop-in。</li>
+<li><strong>症状消失 ≠ 根因解决。</strong> 加了自动重启，UI 不会再假死，但 SEGV 本身还在发生——所以要装 core dump handler 继续追。</li>
+<li><strong><code>qm list</code> 卡住时别急着重启整机。</strong> <code>systemctl restart pvestatd</code> 几乎总是够用，而且不影响正在运行的虚拟机。</li>
+<li><strong>注意 systemd 的静默失效。</strong> <code>StartLimitIntervalSec</code> 放错段会被&quot;忽略&quot;而不报错——配置看着在，其实没生效。改完一定要用 <code>systemctl show</code> 验证。</li>
+</ol>
+<hr>
+<p><em>环境：PVE 8.4.21 &#x2F; kernel 6.8.12-43-pve。</em></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Server/" class="category-chain-item">Server</a>
+  
+  
+
+      </span>
+    
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Homelab/" class="category-chain-item">Homelab</a>
+  
+  
+
+      </span>
+    
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Troubleshooting/" class="category-chain-item">Troubleshooting</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/PVE/" class="print-no-link">#PVE</a>
+      
+        <a href="/tags/Proxmox/" class="print-no-link">#Proxmox</a>
+      
+        <a href="/tags/systemd/" class="print-no-link">#systemd</a>
+      
+        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
+      
+        <a href="/tags/%E6%8E%92%E9%9A%9C/" class="print-no-link">#排障</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>PVE 网页打不开、SSH 里 qm list 卡住：元凶是 pvestatd 崩溃后永不自愈</div>
+      <div>https://wzqvip.github.io/posts/PVE-UI假死-pvestatd崩溃排查/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>塔可taco</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年10月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/posts/phduscard0/" title="PHD玩卡小记-0">
+                        <span class="hidden-mobile">PHD玩卡小记-0</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+    <div id="giscus" class="giscus"></div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#giscus', function() {
+        var options = {"repo":"wzqvip/wzqvip.github.io","repo-id":"R_kgDOPBveyQ","category":"Announcements","category-id":"DIC_kwDOPBveyc4DGe0K","theme-light":"light","theme-dark":"dark","mapping":"pathname","reactions-enabled":1,"emit-metadata":0,"input-position":"top","lang":"zh-CN","strict":1};
+        var attributes = {};
+        for (let option in options) {
+          if (!option.startsWith('theme-')) {
+            var key = option.startsWith('data-') ? option : 'data-' + option;
+            attributes[key] = options[option];
+          }
+        }
+        var light = 'light';
+        var dark = 'dark';
+        window.GiscusThemeLight = light;
+        window.GiscusThemeDark = dark;
+        attributes['data-theme'] = document.documentElement.getAttribute('data-user-color-scheme') === 'dark' ? dark : light;
+        for (let attribute in attributes) {
+          var value = attributes[attribute];
+          if (value === undefined || value === null || value === '') {
+            delete attributes[attribute];
+          }
+        }
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://giscus.app/client.js');
+        s.setAttribute('crossorigin', 'anonymous');
+        for (let attribute in attributes) {
+          s.setAttribute(attribute, attributes[attribute]);
+        }
+        var ss = document.getElementsByTagName('script');
+        var e = ss.length > 0 ? ss[ss.length - 1] : document.head || document.documentElement;
+        e.parentNode.insertBefore(s, e.nextSibling);
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+  
+<script src="/js/custom.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
